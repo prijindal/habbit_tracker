@@ -1,4 +1,5 @@
-import '../models/drift.dart';
+import 'package:intl/intl.dart';
+import '../models/core.dart';
 
 Duration? currentStreak(List<RelapseData>? relapses) {
   if (relapses != null && relapses.isNotEmpty) {
@@ -46,4 +47,8 @@ Duration averageDuration(List<RelapseData>? relapses) {
         seconds: (totalDuration.inSeconds / durations.length).round());
   }
   return const Duration();
+}
+
+String formatDate(DateTime date) {
+  return "${DateFormat.yMMMEd().format(date)} ${DateFormat.jm().format(date)}";
 }

@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import '../components/newrelapse.dart';
+import '../components/relapseform.dart';
+import '../models/core.dart';
 import '../models/drift.dart';
 import '../components/appbar.dart';
 import '../components/counter.dart';
@@ -70,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final relapse = await showDialog<RelapseCompanion?>(
       context: context,
       builder: (BuildContext context) {
-        return const NewRelapseDialog();
+        return const RelapseDialogForm();
       },
     );
     if (relapse != null) {

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'drift.dart';
+part of 'core.dart';
 
 // ignore_for_file: type=lint
 class $RelapseTable extends Relapse with TableInfo<$RelapseTable, RelapseData> {
@@ -220,8 +220,8 @@ class RelapseCompanion extends UpdateCompanion<RelapseData> {
   }
 }
 
-abstract class _$MyDatabase extends GeneratedDatabase {
-  _$MyDatabase(QueryExecutor e) : super(e);
+abstract class _$SharedDatabase extends GeneratedDatabase {
+  _$SharedDatabase(QueryExecutor e) : super(e);
   late final $RelapseTable relapse = $RelapseTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>

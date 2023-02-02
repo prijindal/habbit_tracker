@@ -1,24 +1,36 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
-import 'package:relapse/models/drift.dart';
+import '../models/core.dart';
 
-class NewRelapseDialog extends StatefulWidget {
-  const NewRelapseDialog({super.key});
+class RelapseDialogForm extends StatefulWidget {
+  const RelapseDialogForm({super.key, this.creationTime, this.description});
+
+  final DateTime? creationTime;
+  final String? description;
 
   @override
-  State<NewRelapseDialog> createState() => _NewRelapseDialogState();
+  State<RelapseDialogForm> createState() => _RelapseDialogFormState();
 }
 
-class _NewRelapseDialogState extends State<NewRelapseDialog> {
+class _RelapseDialogFormState extends State<RelapseDialogForm> {
   final TextEditingController _descriptionFieldController =
       TextEditingController();
   DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    _descriptionFieldController.text = widget.description ?? "";
+    _selectedDate = widget.creationTime ?? DateTime.now();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Enter time and description'),
       content: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             onChanged: (value) {},
@@ -26,8 +38,8 @@ class _NewRelapseDialogState extends State<NewRelapseDialog> {
             decoration: const InputDecoration(hintText: "Description"),
           ),
           DateTimeField(
-            decoration: const InputDecoration(
-                hintText: 'Please select your birthday date and time'),
+            decoration:
+                const InputDecoration(hintText: 'Please select date and time'),
             selectedDate: _selectedDate,
             onDateSelected: (DateTime value) {
               setState(() {

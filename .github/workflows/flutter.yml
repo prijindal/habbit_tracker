@@ -64,11 +64,11 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
       # - run: flutter test
-      # - run: flutter build web --release
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: web
-      #     path: build/web
+      - run: flutter build web --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: web
+          path: build/web
       - run: flutter build linux --release
       - uses: actions/upload-artifact@v3
         with:

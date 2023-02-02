@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:relapse/helpers/stats.dart';
-import 'package:relapse/models/drift.dart';
+import '../models/core.dart';
 
 class CounterSubPage extends StatefulWidget {
   const CounterSubPage({

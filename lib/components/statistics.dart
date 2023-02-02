@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../helpers/stats.dart';
-import '../models/drift.dart';
+import '../models/core.dart';
 
 class StatisticsSubPage extends StatefulWidget {
   const StatisticsSubPage({
