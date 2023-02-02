@@ -16,15 +16,12 @@ class CounterSubPage extends StatefulWidget {
 }
 
 class _CounterSubPageState extends State<CounterSubPage> {
-  String? _currentStreak;
-  String? _largestStreak = "";
   Timer? countdownTimer;
 
   @override
   void initState() {
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _setCurrentStreak();
-      _setLargestStreak();
+      setState(() {});
     });
     super.initState();
   }
@@ -65,12 +62,6 @@ class _CounterSubPageState extends State<CounterSubPage> {
     return text;
   }
 
-  void _setCurrentStreak() {
-    setState(() {
-      _currentStreak = _getCurrentStreak();
-    });
-  }
-
   String _getLargestStreak() {
     var text = "No Data";
     final streak = longestStreak(widget.relapses);
@@ -78,12 +69,6 @@ class _CounterSubPageState extends State<CounterSubPage> {
       text = "Longest Streak: ${durationToStreak(streak)}";
     }
     return text;
-  }
-
-  void _setLargestStreak() {
-    setState(() {
-      _largestStreak = _getLargestStreak();
-    });
   }
 
   @override
@@ -94,10 +79,10 @@ class _CounterSubPageState extends State<CounterSubPage> {
           : Column(children: [
               _daysSince(),
               Text(
-                _currentStreak ?? _getCurrentStreak(),
+                _getCurrentStreak(),
               ),
               Text(
-                _largestStreak ?? _getLargestStreak(),
+                _getLargestStreak(),
               )
             ]),
     );
