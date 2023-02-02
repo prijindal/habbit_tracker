@@ -86,16 +86,16 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
       # - run: flutter test
-      # - run: flutter build ios --release --no-codesign
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ios
-      #     path: build/ios
       - run: flutter build macos --release
       - uses: actions/upload-artifact@v3
         with:
           name: macos
           path: build/macos
+      - run: flutter build ios --release --no-codesign
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ios
+          path: build/ios
 
   windows:
     runs-on: windows-latest
