@@ -30,15 +30,35 @@ class ProfileScreen extends StatelessWidget {
       //   ..setAttribute("download", "db.json")
       //   ..click();
     } else {
-      final downloadFolder = await getDownloadsDirectory();
-      if (downloadFolder != null) {
-        final path = p.join(downloadFolder.path, 'db.json');
+      String? downloadDirectory;
+      if (Platform.isAndroid) {
+        final externalStorageFolders = await getExternalStorageDirectories(
+          type: StorageDirectory.downloads,
+        );
+        if (externalStorageFolders != null &&
+            externalStorageFolders.isNotEmpty) {
+          downloadDirectory = externalStorageFolders.first.path;
+        }
+      } else {
+        final downloadFolder = await getDownloadsDirectory();
+        if (downloadFolder != null) {
+          downloadDirectory = downloadFolder.path;
+        }
+      }
+      if (downloadDirectory != null) {
+        final path = p.join(downloadDirectory, 'db.json');
         final file = File(path);
         await file.writeAsString(encoded);
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Content saved at $path"),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Can't find download directory"),
           ),
         );
       }
