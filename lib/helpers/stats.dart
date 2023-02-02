@@ -52,8 +52,8 @@ List<DurationData> allDurationsData(List<RelapseData>? relapses) {
       allDurations.add(
         DurationData(
           duration: newStreak,
-          start: relapses[i - 1].creationTime,
-          end: relapses[i].creationTime,
+          start: relapses[i].creationTime,
+          end: relapses[i - 1].creationTime,
         ),
       );
     }

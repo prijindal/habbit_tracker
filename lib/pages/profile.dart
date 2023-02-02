@@ -67,25 +67,32 @@ class ProfileScreen extends StatelessWidget {
 
   void _uploadContent(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.single.bytes != null) {
-      String jsonEncoded = utf8.decode(result.files.single.bytes!);
-      List<dynamic> relapses = jsonDecode(jsonEncoded);
-      try {
-        await MyDatabase.instance.batch((batch) {
-          batch.insertAll(MyDatabase.instance.relapse,
-              relapses.map((a) => RelapseData.fromJson(a)));
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Successfully imported"),
-          ),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-          ),
-        );
+    if (result != null) {
+      String? jsonEncoded;
+      if (result.files.single.bytes != null) {
+        jsonEncoded = utf8.decode(result.files.single.bytes!);
+      } else if (result.files.single.path != null) {
+        jsonEncoded = await File(result.files.single.path!).readAsString();
+      }
+      if (jsonEncoded != null) {
+        List<dynamic> relapses = jsonDecode(jsonEncoded);
+        try {
+          await MyDatabase.instance.batch((batch) {
+            batch.insertAll(MyDatabase.instance.relapse,
+                relapses.map((a) => RelapseData.fromJson(a)));
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Successfully imported"),
+            ),
+          );
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+            ),
+          );
+        }
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

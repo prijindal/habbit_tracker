@@ -16,14 +16,12 @@ class CounterSubPage extends StatefulWidget {
 }
 
 class _CounterSubPageState extends State<CounterSubPage> {
-  String _currentStreak = "";
-  String _longestStreak = "";
+  String? _currentStreak;
+  String? _largestStreak = "";
   Timer? countdownTimer;
 
   @override
   void initState() {
-    _setCurrentStreak();
-    _setLargestStreak();
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _setCurrentStreak();
       _setLargestStreak();
@@ -55,7 +53,7 @@ class _CounterSubPageState extends State<CounterSubPage> {
     return "${streak.inDays}d ${streak.inHours % 24}h ${streak.inMinutes % 60}m ${streak.inSeconds % 60}s";
   }
 
-  void _setCurrentStreak() {
+  String _getCurrentStreak() {
     var text = "No Data";
     final streak = currentStreak(widget.relapses);
     if (streak != null) {
@@ -64,19 +62,27 @@ class _CounterSubPageState extends State<CounterSubPage> {
     if (streak != null) {
       text = "Current Streak: ${durationToStreak(streak)}";
     }
+    return text;
+  }
+
+  void _setCurrentStreak() {
     setState(() {
-      _currentStreak = text;
+      _currentStreak = _getCurrentStreak();
     });
   }
 
-  void _setLargestStreak() {
+  String _getLargestStreak() {
     var text = "No Data";
     final streak = longestStreak(widget.relapses);
     if (streak != null) {
       text = "Longest Streak: ${durationToStreak(streak)}";
     }
+    return text;
+  }
+
+  void _setLargestStreak() {
     setState(() {
-      _longestStreak = text;
+      _largestStreak = _getLargestStreak();
     });
   }
 
@@ -88,10 +94,10 @@ class _CounterSubPageState extends State<CounterSubPage> {
           : Column(children: [
               _daysSince(),
               Text(
-                _currentStreak,
+                _currentStreak ?? _getCurrentStreak(),
               ),
               Text(
-                _longestStreak,
+                _largestStreak ?? _getLargestStreak(),
               )
             ]),
     );
