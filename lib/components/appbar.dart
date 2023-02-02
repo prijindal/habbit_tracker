@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:relapse/pages/profile.dart';
+import '../pages/profile.dart';
 
 class MyAppBar extends AppBar {
   MyAppBar({super.key, required this.context});
