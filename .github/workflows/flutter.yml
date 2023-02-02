@@ -91,11 +91,11 @@ jobs:
       #   with:
       #     name: ios
       #     path: build/ios
-      # - run: flutter build macos --release
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: macos
-      #     path: build/macos
+      - run: flutter build macos --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: macos
+          path: build/macos
 
   windows:
     runs-on: windows-latest

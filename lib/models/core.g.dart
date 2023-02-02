@@ -10,13 +10,12 @@ class $RelapseTable extends Relapse with TableInfo<$RelapseTable, RelapseData> {
   $RelapseTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+      clientDefault: () => _uuid.v4());
   static const VerificationMeta _descriptionMeta =
       const VerificationMeta('description');
   @override
@@ -61,13 +60,13 @@ class $RelapseTable extends Relapse with TableInfo<$RelapseTable, RelapseData> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => const {};
   @override
   RelapseData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return RelapseData(
       id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description']),
       creationTime: attachedDatabase.typeMapping.read(
@@ -82,7 +81,7 @@ class $RelapseTable extends Relapse with TableInfo<$RelapseTable, RelapseData> {
 }
 
 class RelapseData extends DataClass implements Insertable<RelapseData> {
-  final int id;
+  final String id;
   final String? description;
   final DateTime creationTime;
   const RelapseData(
@@ -90,7 +89,7 @@ class RelapseData extends DataClass implements Insertable<RelapseData> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
+    map['id'] = Variable<String>(id);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
     }
@@ -112,7 +111,7 @@ class RelapseData extends DataClass implements Insertable<RelapseData> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return RelapseData(
-      id: serializer.fromJson<int>(json['id']),
+      id: serializer.fromJson<String>(json['id']),
       description: serializer.fromJson<String?>(json['description']),
       creationTime: serializer.fromJson<DateTime>(json['creationTime']),
     );
@@ -121,14 +120,14 @@ class RelapseData extends DataClass implements Insertable<RelapseData> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'id': serializer.toJson<String>(id),
       'description': serializer.toJson<String?>(description),
       'creationTime': serializer.toJson<DateTime>(creationTime),
     };
   }
 
   RelapseData copyWith(
-          {int? id,
+          {String? id,
           Value<String?> description = const Value.absent(),
           DateTime? creationTime}) =>
       RelapseData(
@@ -158,7 +157,7 @@ class RelapseData extends DataClass implements Insertable<RelapseData> {
 }
 
 class RelapseCompanion extends UpdateCompanion<RelapseData> {
-  final Value<int> id;
+  final Value<String> id;
   final Value<String?> description;
   final Value<DateTime> creationTime;
   const RelapseCompanion({
@@ -172,7 +171,7 @@ class RelapseCompanion extends UpdateCompanion<RelapseData> {
     this.creationTime = const Value.absent(),
   });
   static Insertable<RelapseData> custom({
-    Expression<int>? id,
+    Expression<String>? id,
     Expression<String>? description,
     Expression<DateTime>? creationTime,
   }) {
@@ -184,7 +183,7 @@ class RelapseCompanion extends UpdateCompanion<RelapseData> {
   }
 
   RelapseCompanion copyWith(
-      {Value<int>? id,
+      {Value<String>? id,
       Value<String?>? description,
       Value<DateTime>? creationTime}) {
     return RelapseCompanion(
@@ -198,7 +197,7 @@ class RelapseCompanion extends UpdateCompanion<RelapseData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
