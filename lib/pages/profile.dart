@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html' as web_file;
+// import 'dart:html' as web_file;
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
@@ -18,12 +18,17 @@ class ProfileScreen extends StatelessWidget {
         await MyDatabase.instance.select(MyDatabase.instance.relapse).get();
     String encoded = jsonEncode(relapses);
     if (kIsWeb) {
-      var blob = web_file.Blob([encoded], 'text/plain', 'native');
-      var anchorElement = web_file.AnchorElement(
-        href: web_file.Url.createObjectUrlFromBlob(blob).toString(),
-      )
-        ..setAttribute("download", "db.json")
-        ..click();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Not Supported"),
+        ),
+      );
+      // var blob = web_file.Blob([encoded], 'text/plain', 'native');
+      // var anchorElement = web_file.AnchorElement(
+      //   href: web_file.Url.createObjectUrlFromBlob(blob).toString(),
+      // )
+      //   ..setAttribute("download", "db.json")
+      //   ..click();
     } else {
       final downloadFolder = await getDownloadsDirectory();
       if (downloadFolder != null) {
