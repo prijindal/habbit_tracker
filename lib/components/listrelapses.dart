@@ -1,7 +1,5 @@
-import 'dart:async';
-
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:relapse/models/drift.dart';
 
 class ListRelapsesSubPage extends StatefulWidget {
@@ -17,13 +15,17 @@ class ListRelapsesSubPage extends StatefulWidget {
 }
 
 class _ListRelapsesSubPageState extends State<ListRelapsesSubPage> {
+  String _formatDate(DateTime date) {
+    return "${DateFormat.yMMMEd().format(date)} ${DateFormat.jm().format(date)}";
+  }
+
   void _confirmDelete(RelapseData relapse) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Are you sure you want to delete"),
-          content: Text(relapse.creationTime.toString()),
+          content: Text(_formatDate(relapse.creationTime)),
           actions: [
             TextButton(
               onPressed: () {
@@ -50,6 +52,7 @@ class _ListRelapsesSubPageState extends State<ListRelapsesSubPage> {
   Widget build(BuildContext context) {
     final relapses = widget.relapses;
     return ListView.builder(
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 80),
       itemCount: relapses != null ? relapses.length : 1,
       itemBuilder: (BuildContext context, int index) {
         if (relapses == null) {
@@ -57,9 +60,11 @@ class _ListRelapsesSubPageState extends State<ListRelapsesSubPage> {
         }
         final relapse = relapses[index];
         return ListTile(
-          title: Text(relapse.creationTime.toString()),
+          title: Text(_formatDate(relapse.creationTime)),
           subtitle:
-              relapse.description == null ? null : Text(relapse.description!),
+              (relapse.description == null || relapse.description!.isEmpty)
+                  ? null
+                  : Text(relapse.description!),
           trailing: IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {

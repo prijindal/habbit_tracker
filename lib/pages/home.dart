@@ -19,16 +19,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   Widget _getWidget() {
-    final List<Widget> _widgetOptions = <Widget>[
+    final List<Widget> widgetOptions = <Widget>[
       CounterSubPage(
         relapses: _relapses,
       ),
-      StatisticsSubPage(),
+      StatisticsSubPage(
+        relapses: _relapses,
+      ),
       ListRelapsesSubPage(
         relapses: _relapses,
       ),
     ];
-    return _widgetOptions.elementAt(_selectedIndex);
+    return widgetOptions.elementAt(_selectedIndex);
   }
 
   List<RelapseData>? _relapses;

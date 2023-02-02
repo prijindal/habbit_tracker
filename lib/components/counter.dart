@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:relapse/helpers/stats.dart';
 import 'package:relapse/models/drift.dart';
 
 class CounterSubPage extends StatefulWidget {
@@ -38,11 +39,9 @@ class _CounterSubPageState extends State<CounterSubPage> {
 
   Widget _daysSince() {
     var text = "No Data";
-    final relapses = widget.relapses;
-    if (relapses != null && relapses.isNotEmpty) {
-      final daysSince =
-          DateTime.now().difference(relapses[0].creationTime).inDays;
-      text = "$daysSince Days";
+    final streak = currentStreak(widget.relapses);
+    if (streak != null) {
+      text = "${streak.inDays} Days";
     }
     return Text(
       text,
@@ -53,14 +52,16 @@ class _CounterSubPageState extends State<CounterSubPage> {
   }
 
   String durationToStreak(Duration streak) {
-    return "${streak.inDays}d ${streak.inHours % 24}m ${streak.inMinutes % 60}m ${streak.inSeconds % 60}s";
+    return "${streak.inDays}d ${streak.inHours % 24}h ${streak.inMinutes % 60}m ${streak.inSeconds % 60}s";
   }
 
   void _setCurrentStreak() {
     var text = "No Data";
-    final relapses = widget.relapses;
-    if (relapses != null && relapses.isNotEmpty) {
-      final streak = DateTime.now().difference(relapses[0].creationTime);
+    final streak = currentStreak(widget.relapses);
+    if (streak != null) {
+      text = "${streak.inDays} Days";
+    }
+    if (streak != null) {
       text = "Current Streak: ${durationToStreak(streak)}";
     }
     setState(() {
@@ -70,16 +71,8 @@ class _CounterSubPageState extends State<CounterSubPage> {
 
   void _setLargestStreak() {
     var text = "No Data";
-    final relapses = widget.relapses;
-    if (relapses != null && relapses.isNotEmpty) {
-      Duration streak = DateTime.now().difference(relapses[0].creationTime);
-      for (var i = 1; i < relapses.length; i++) {
-        final newStreak =
-            relapses[i - 1].creationTime.difference(relapses[i].creationTime);
-        if (newStreak > streak) {
-          streak = newStreak;
-        }
-      }
+    final streak = longestStreak(widget.relapses);
+    if (streak != null) {
       text = "Longest Streak: ${durationToStreak(streak)}";
     }
     setState(() {
