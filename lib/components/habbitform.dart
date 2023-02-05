@@ -1,58 +1,46 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:date_field/date_field.dart';
 import '../models/core.dart';
 
-class EntryDialogForm extends StatefulWidget {
-  const EntryDialogForm({
-    super.key,
-    required this.habbit,
-    this.creationTime,
-    this.description,
-  });
+class HabbitDialogForm extends StatefulWidget {
+  const HabbitDialogForm({super.key, this.name, this.description});
 
-  final DateTime? creationTime;
+  final String? name;
   final String? description;
-  final String habbit;
 
   @override
-  State<EntryDialogForm> createState() => _EntryDialogFormState();
+  State<HabbitDialogForm> createState() => _HabbitDialogFormState();
 }
 
-class _EntryDialogFormState extends State<EntryDialogForm> {
+class _HabbitDialogFormState extends State<HabbitDialogForm> {
+  final TextEditingController _nameFieldController = TextEditingController();
   final TextEditingController _descriptionFieldController =
       TextEditingController();
-  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
+    _nameFieldController.text = widget.name ?? "";
     _descriptionFieldController.text = widget.description ?? "";
-    _selectedDate = widget.creationTime ?? DateTime.now();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Enter time and description'),
+      title: const Text('Enter name and description'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             onChanged: (value) {},
+            controller: _nameFieldController,
+            decoration: const InputDecoration(hintText: "Name"),
+          ),
+          TextField(
+            onChanged: (value) {},
             controller: _descriptionFieldController,
             decoration: const InputDecoration(hintText: "Description"),
           ),
-          DateTimeField(
-            decoration:
-                const InputDecoration(hintText: 'Please select date and time'),
-            selectedDate: _selectedDate,
-            onDateSelected: (DateTime value) {
-              setState(() {
-                _selectedDate = value;
-              });
-            },
-          )
         ],
       ),
       actions: [
@@ -64,11 +52,10 @@ class _EntryDialogFormState extends State<EntryDialogForm> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop<HabbitEntryCompanion>(
-              HabbitEntryCompanion(
-                creationTime: drift.Value(_selectedDate),
+            Navigator.of(context).pop<HabbitCompanion>(
+              HabbitCompanion(
+                name: drift.Value(_nameFieldController.text),
                 description: drift.Value(_descriptionFieldController.text),
-                habbit: drift.Value(widget.habbit),
               ),
             );
           },

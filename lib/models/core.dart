@@ -10,11 +10,20 @@ part 'core.g.dart';
 
 const _uuid = Uuid();
 
+class Habbit extends Table {
+  TextColumn get id => text().unique().clientDefault(() => _uuid.v4())();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get creationTime =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
 class HabbitEntry extends Table {
   TextColumn get id => text().unique().clientDefault(() => _uuid.v4())();
   TextColumn get description => text().nullable()();
   DateTimeColumn get creationTime =>
       dateTime().withDefault(currentDateAndTime)();
+  TextColumn get habbit => text().references(Habbit, #id)();
 }
 
 // this annotation tells drift to prepare a database class that uses both of the

@@ -2,13 +2,11 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import '../components/entryform.dart';
+import 'package:habbit_tracker/pages/habbit.dart';
+import '../components/habbitform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
 import '../components/appbar.dart';
-import '../components/counter.dart';
-import '../components/statistics.dart';
-import '../components/listentries.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -18,24 +16,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-  Widget _getWidget() {
-    final List<Widget> widgetOptions = <Widget>[
-      CounterSubPage(
-        entries: _entries,
-      ),
-      StatisticsSubPage(
-        entries: _entries,
-      ),
-      ListEntriesSubPage(
-        entries: _entries,
-      ),
-    ];
-    return widgetOptions.elementAt(_selectedIndex);
-  }
-
-  List<HabbitEntryData>? _entries;
-  StreamSubscription<List<HabbitEntryData>>? _subscription;
+  List<HabbitData>? _habbits;
+  StreamSubscription<List<HabbitData>>? _subscription;
 
   @override
   void initState() {
@@ -50,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _addWatcher() {
-    _subscription = (MyDatabase.instance.habbitEntry.select()
+    _subscription = (MyDatabase.instance.habbit.select()
           ..orderBy(
             [
               (t) => OrderingTerm(
@@ -62,21 +44,23 @@ class _MyHomePageState extends State<MyHomePage> {
         .watch()
         .listen((event) {
       setState(() {
-        _entries = event;
+        _habbits = event;
       });
     });
   }
 
-  void _recordEntry() async {
-    final entries = await showDialog<HabbitEntryCompanion?>(
+  void _confirmDelete(HabbitData habbit) {}
+
+  void _recordHabbit() async {
+    final entries = await showDialog<HabbitCompanion?>(
       context: context,
       builder: (BuildContext context) {
-        return const EntryDialogForm();
+        return const HabbitDialogForm();
       },
     );
     if (entries != null) {
       await MyDatabase.instance
-          .into(MyDatabase.instance.habbitEntry)
+          .into(MyDatabase.instance.habbit)
           .insert(entries);
     }
   }
@@ -87,36 +71,40 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: MyAppBar(
         context: context,
       ),
-      body: Center(
-        child: _getWidget(),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.monitor),
-            label: 'Statistics',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'List',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+      body: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
+        itemCount: _habbits != null ? _habbits!.length : 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (_habbits == null) {
+            return const Text("Loading...");
+          }
+          final habbit = _habbits![index];
+          return ListTile(
+            title: Text(habbit.name),
+            subtitle:
+                (habbit.description == null || habbit.description!.isEmpty)
+                    ? null
+                    : Text(habbit.description!),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HabbitPage(
+                  habbit: habbit,
+                ),
+              ),
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _confirmDelete(habbit),
+            ),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _recordEntry,
-        tooltip: 'Entry',
-        child: const Icon(Icons.thumb_down),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        onPressed: _recordHabbit,
+        tooltip: 'Habbit',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

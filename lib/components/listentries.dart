@@ -8,9 +8,11 @@ import '../models/drift.dart';
 class ListEntriesSubPage extends StatefulWidget {
   const ListEntriesSubPage({
     super.key,
+    required this.habbit,
     required this.entries,
   });
 
+  final HabbitData habbit;
   final List<HabbitEntryData>? entries;
 
   @override
@@ -34,6 +36,7 @@ class _ListEntriesSubPageState extends State<ListEntriesSubPage> {
       context: context,
       builder: (BuildContext context) {
         return EntryDialogForm(
+          habbit: widget.habbit.id,
           creationTime: entry.creationTime,
           description: entry.description,
         );
