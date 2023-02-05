@@ -10,7 +10,7 @@ part 'core.g.dart';
 
 const _uuid = Uuid();
 
-class Relapse extends Table {
+class HabbitEntry extends Table {
   TextColumn get id => text().unique().clientDefault(() => _uuid.v4())();
   TextColumn get description => text().nullable()();
   DateTimeColumn get creationTime =>
@@ -19,7 +19,7 @@ class Relapse extends Table {
 
 // this annotation tells drift to prepare a database class that uses both of the
 // tables we just defined. We'll see how to use that database class in a moment.
-@DriftDatabase(tables: [Relapse])
+@DriftDatabase(tables: [HabbitEntry])
 class SharedDatabase extends _$SharedDatabase {
   SharedDatabase(QueryExecutor e) : super(e);
 

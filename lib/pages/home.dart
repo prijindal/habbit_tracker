@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import '../components/relapseform.dart';
+import '../components/entryform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
 import '../components/appbar.dart';
 import '../components/counter.dart';
 import '../components/statistics.dart';
-import '../components/listrelapses.dart';
+import '../components/listentries.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -22,20 +22,20 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _getWidget() {
     final List<Widget> widgetOptions = <Widget>[
       CounterSubPage(
-        relapses: _relapses,
+        entries: _entries,
       ),
       StatisticsSubPage(
-        relapses: _relapses,
+        entries: _entries,
       ),
-      ListRelapsesSubPage(
-        relapses: _relapses,
+      ListEntriesSubPage(
+        entries: _entries,
       ),
     ];
     return widgetOptions.elementAt(_selectedIndex);
   }
 
-  List<RelapseData>? _relapses;
-  StreamSubscription<List<RelapseData>>? _subscription;
+  List<HabbitEntryData>? _entries;
+  StreamSubscription<List<HabbitEntryData>>? _subscription;
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _addWatcher() {
-    _subscription = (MyDatabase.instance.relapse.select()
+    _subscription = (MyDatabase.instance.habbitEntry.select()
           ..orderBy(
             [
               (t) => OrderingTerm(
@@ -62,22 +62,22 @@ class _MyHomePageState extends State<MyHomePage> {
         .watch()
         .listen((event) {
       setState(() {
-        _relapses = event;
+        _entries = event;
       });
     });
   }
 
-  void _recordRelapse() async {
-    final relapse = await showDialog<RelapseCompanion?>(
+  void _recordEntry() async {
+    final entries = await showDialog<HabbitEntryCompanion?>(
       context: context,
       builder: (BuildContext context) {
-        return const RelapseDialogForm();
+        return const EntryDialogForm();
       },
     );
-    if (relapse != null) {
+    if (entries != null) {
       await MyDatabase.instance
-          .into(MyDatabase.instance.relapse)
-          .insert(relapse);
+          .into(MyDatabase.instance.habbitEntry)
+          .insert(entries);
     }
   }
 
@@ -113,8 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _recordRelapse,
-        tooltip: 'Relapse',
+        onPressed: _recordEntry,
+        tooltip: 'Entry',
         child: const Icon(Icons.thumb_down),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );

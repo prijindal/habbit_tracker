@@ -7,9 +7,9 @@ import '../models/core.dart';
 class CounterSubPage extends StatefulWidget {
   const CounterSubPage({
     super.key,
-    required this.relapses,
+    required this.entries,
   });
-  final List<RelapseData>? relapses;
+  final List<HabbitEntryData>? entries;
 
   @override
   State<CounterSubPage> createState() => _CounterSubPageState();
@@ -34,7 +34,7 @@ class _CounterSubPageState extends State<CounterSubPage> {
 
   Widget _daysSince() {
     var text = "No Data";
-    final streak = currentStreak(widget.relapses);
+    final streak = currentStreak(widget.entries);
     if (streak != null) {
       text = "${streak.inDays} Days";
     }
@@ -52,7 +52,7 @@ class _CounterSubPageState extends State<CounterSubPage> {
 
   String _getCurrentStreak() {
     var text = "No Data";
-    final streak = currentStreak(widget.relapses);
+    final streak = currentStreak(widget.entries);
     if (streak != null) {
       text = "${streak.inDays} Days";
     }
@@ -64,7 +64,7 @@ class _CounterSubPageState extends State<CounterSubPage> {
 
   String _getLargestStreak() {
     var text = "No Data";
-    final streak = longestStreak(widget.relapses, includeCurrent: true);
+    final streak = longestStreak(widget.entries, includeCurrent: true);
     if (streak != null) {
       text = "Longest Streak: ${durationToStreak(streak)}";
     }
@@ -74,7 +74,7 @@ class _CounterSubPageState extends State<CounterSubPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: widget.relapses == null
+      child: widget.entries == null
           ? const Text("Loading")
           : Column(children: [
               _daysSince(),

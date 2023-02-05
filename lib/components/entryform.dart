@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
 import '../models/core.dart';
 
-class RelapseDialogForm extends StatefulWidget {
-  const RelapseDialogForm({super.key, this.creationTime, this.description});
+class EntryDialogForm extends StatefulWidget {
+  const EntryDialogForm({super.key, this.creationTime, this.description});
 
   final DateTime? creationTime;
   final String? description;
 
   @override
-  State<RelapseDialogForm> createState() => _RelapseDialogFormState();
+  State<EntryDialogForm> createState() => _EntryDialogFormState();
 }
 
-class _RelapseDialogFormState extends State<RelapseDialogForm> {
+class _EntryDialogFormState extends State<EntryDialogForm> {
   final TextEditingController _descriptionFieldController =
       TextEditingController();
   DateTime _selectedDate = DateTime.now();
@@ -58,8 +58,8 @@ class _RelapseDialogFormState extends State<RelapseDialogForm> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop<RelapseCompanion>(
-              RelapseCompanion(
+            Navigator.of(context).pop<HabbitEntryCompanion>(
+              HabbitEntryCompanion(
                 creationTime: drift.Value(_selectedDate),
                 description: drift.Value(_descriptionFieldController.text),
               ),

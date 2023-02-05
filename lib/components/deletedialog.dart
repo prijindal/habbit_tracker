@@ -3,19 +3,19 @@ import '../helpers/stats.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
 
-class DeleteRelapseDialog extends StatelessWidget {
-  const DeleteRelapseDialog({
+class DeleteEntryDialog extends StatelessWidget {
+  const DeleteEntryDialog({
     super.key,
-    required this.relapse,
+    required this.entry,
   });
 
-  final RelapseData relapse;
+  final HabbitEntryData entry;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text("Are you sure you want to delete"),
-      content: Text(formatDate(relapse.creationTime)),
+      content: Text(formatDate(entry.creationTime)),
       actions: [
         TextButton(
           onPressed: () {
@@ -25,8 +25,8 @@ class DeleteRelapseDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            (MyDatabase.instance.delete(MyDatabase.instance.relapse)
-                  ..where((tbl) => tbl.id.equals(relapse.id)))
+            (MyDatabase.instance.delete(MyDatabase.instance.habbitEntry)
+                  ..where((tbl) => tbl.id.equals(entry.id)))
                 .go();
             Navigator.of(context).pop();
           },

@@ -3,11 +3,12 @@
 part of 'core.dart';
 
 // ignore_for_file: type=lint
-class $RelapseTable extends Relapse with TableInfo<$RelapseTable, RelapseData> {
+class $HabbitEntryTable extends HabbitEntry
+    with TableInfo<$HabbitEntryTable, HabbitEntryData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $RelapseTable(this.attachedDatabase, [this._alias]);
+  $HabbitEntryTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -33,11 +34,11 @@ class $RelapseTable extends Relapse with TableInfo<$RelapseTable, RelapseData> {
   @override
   List<GeneratedColumn> get $columns => [id, description, creationTime];
   @override
-  String get aliasedName => _alias ?? 'relapse';
+  String get aliasedName => _alias ?? 'habbit_entry';
   @override
-  String get actualTableName => 'relapse';
+  String get actualTableName => 'habbit_entry';
   @override
-  VerificationContext validateIntegrity(Insertable<RelapseData> instance,
+  VerificationContext validateIntegrity(Insertable<HabbitEntryData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -62,9 +63,9 @@ class $RelapseTable extends Relapse with TableInfo<$RelapseTable, RelapseData> {
   @override
   Set<GeneratedColumn> get $primaryKey => const {};
   @override
-  RelapseData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  HabbitEntryData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RelapseData(
+    return HabbitEntryData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       description: attachedDatabase.typeMapping
@@ -75,16 +76,16 @@ class $RelapseTable extends Relapse with TableInfo<$RelapseTable, RelapseData> {
   }
 
   @override
-  $RelapseTable createAlias(String alias) {
-    return $RelapseTable(attachedDatabase, alias);
+  $HabbitEntryTable createAlias(String alias) {
+    return $HabbitEntryTable(attachedDatabase, alias);
   }
 }
 
-class RelapseData extends DataClass implements Insertable<RelapseData> {
+class HabbitEntryData extends DataClass implements Insertable<HabbitEntryData> {
   final String id;
   final String? description;
   final DateTime creationTime;
-  const RelapseData(
+  const HabbitEntryData(
       {required this.id, this.description, required this.creationTime});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -97,8 +98,8 @@ class RelapseData extends DataClass implements Insertable<RelapseData> {
     return map;
   }
 
-  RelapseCompanion toCompanion(bool nullToAbsent) {
-    return RelapseCompanion(
+  HabbitEntryCompanion toCompanion(bool nullToAbsent) {
+    return HabbitEntryCompanion(
       id: Value(id),
       description: description == null && nullToAbsent
           ? const Value.absent()
@@ -107,10 +108,10 @@ class RelapseData extends DataClass implements Insertable<RelapseData> {
     );
   }
 
-  factory RelapseData.fromJson(Map<String, dynamic> json,
+  factory HabbitEntryData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RelapseData(
+    return HabbitEntryData(
       id: serializer.fromJson<String>(json['id']),
       description: serializer.fromJson<String?>(json['description']),
       creationTime: serializer.fromJson<DateTime>(json['creationTime']),
@@ -126,18 +127,18 @@ class RelapseData extends DataClass implements Insertable<RelapseData> {
     };
   }
 
-  RelapseData copyWith(
+  HabbitEntryData copyWith(
           {String? id,
           Value<String?> description = const Value.absent(),
           DateTime? creationTime}) =>
-      RelapseData(
+      HabbitEntryData(
         id: id ?? this.id,
         description: description.present ? description.value : this.description,
         creationTime: creationTime ?? this.creationTime,
       );
   @override
   String toString() {
-    return (StringBuffer('RelapseData(')
+    return (StringBuffer('HabbitEntryData(')
           ..write('id: $id, ')
           ..write('description: $description, ')
           ..write('creationTime: $creationTime')
@@ -150,27 +151,27 @@ class RelapseData extends DataClass implements Insertable<RelapseData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is RelapseData &&
+      (other is HabbitEntryData &&
           other.id == this.id &&
           other.description == this.description &&
           other.creationTime == this.creationTime);
 }
 
-class RelapseCompanion extends UpdateCompanion<RelapseData> {
+class HabbitEntryCompanion extends UpdateCompanion<HabbitEntryData> {
   final Value<String> id;
   final Value<String?> description;
   final Value<DateTime> creationTime;
-  const RelapseCompanion({
+  const HabbitEntryCompanion({
     this.id = const Value.absent(),
     this.description = const Value.absent(),
     this.creationTime = const Value.absent(),
   });
-  RelapseCompanion.insert({
+  HabbitEntryCompanion.insert({
     this.id = const Value.absent(),
     this.description = const Value.absent(),
     this.creationTime = const Value.absent(),
   });
-  static Insertable<RelapseData> custom({
+  static Insertable<HabbitEntryData> custom({
     Expression<String>? id,
     Expression<String>? description,
     Expression<DateTime>? creationTime,
@@ -182,11 +183,11 @@ class RelapseCompanion extends UpdateCompanion<RelapseData> {
     });
   }
 
-  RelapseCompanion copyWith(
+  HabbitEntryCompanion copyWith(
       {Value<String>? id,
       Value<String?>? description,
       Value<DateTime>? creationTime}) {
-    return RelapseCompanion(
+    return HabbitEntryCompanion(
       id: id ?? this.id,
       description: description ?? this.description,
       creationTime: creationTime ?? this.creationTime,
@@ -210,7 +211,7 @@ class RelapseCompanion extends UpdateCompanion<RelapseData> {
 
   @override
   String toString() {
-    return (StringBuffer('RelapseCompanion(')
+    return (StringBuffer('HabbitEntryCompanion(')
           ..write('id: $id, ')
           ..write('description: $description, ')
           ..write('creationTime: $creationTime')
@@ -221,10 +222,10 @@ class RelapseCompanion extends UpdateCompanion<RelapseData> {
 
 abstract class _$SharedDatabase extends GeneratedDatabase {
   _$SharedDatabase(QueryExecutor e) : super(e);
-  late final $RelapseTable relapse = $RelapseTable(this);
+  late final $HabbitEntryTable habbitEntry = $HabbitEntryTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [relapse];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [habbitEntry];
 }

@@ -12,62 +12,62 @@ class DurationData {
   final DateTime end;
 }
 
-Duration? currentStreak(List<RelapseData>? relapses) {
-  if (relapses != null && relapses.isNotEmpty) {
-    return DateTime.now().difference(relapses[0].creationTime);
+Duration? currentStreak(List<HabbitEntryData>? entries) {
+  if (entries != null && entries.isNotEmpty) {
+    return DateTime.now().difference(entries[0].creationTime);
   }
   return null;
 }
 
 Duration? longestStreak(
-  List<RelapseData>? relapses, {
+  List<HabbitEntryData>? entries, {
   bool includeCurrent = false,
 }) {
-  if (relapses != null &&
-      relapses.isNotEmpty &&
-      allDurationsData(relapses, includeCurrent: includeCurrent).isNotEmpty) {
-    return allDurationsData(relapses, includeCurrent: includeCurrent)
+  if (entries != null &&
+      entries.isNotEmpty &&
+      allDurationsData(entries, includeCurrent: includeCurrent).isNotEmpty) {
+    return allDurationsData(entries, includeCurrent: includeCurrent)
         .last
         .duration;
   }
   return null;
 }
 
-Duration? shortestStreak(List<RelapseData>? relapses) {
-  if (relapses != null &&
-      relapses.isNotEmpty &&
-      allDurationsData(relapses).isNotEmpty) {
-    return allDurationsData(relapses).first.duration;
+Duration? shortestStreak(List<HabbitEntryData>? entries) {
+  if (entries != null &&
+      entries.isNotEmpty &&
+      allDurationsData(entries).isNotEmpty) {
+    return allDurationsData(entries).first.duration;
   }
   return null;
 }
 
 List<DurationData> allDurationsData(
-  List<RelapseData>? relapses, {
+  List<HabbitEntryData>? entries, {
   bool includeCurrent = false,
 }) {
   final List<DurationData> allDurations = [];
-  if (relapses != null && relapses.isNotEmpty) {
+  if (entries != null && entries.isNotEmpty) {
     if (includeCurrent) {
       final now = DateTime.now();
       allDurations.add(
         DurationData(
           duration: now.difference(
-            relapses[0].creationTime,
+            entries[0].creationTime,
           ),
-          start: relapses[0].creationTime,
+          start: entries[0].creationTime,
           end: now,
         ),
       );
     }
-    for (var i = 1; i < relapses.length; i++) {
+    for (var i = 1; i < entries.length; i++) {
       final newStreak =
-          relapses[i - 1].creationTime.difference(relapses[i].creationTime);
+          entries[i - 1].creationTime.difference(entries[i].creationTime);
       allDurations.add(
         DurationData(
           duration: newStreak,
-          start: relapses[i].creationTime,
-          end: relapses[i - 1].creationTime,
+          start: entries[i].creationTime,
+          end: entries[i - 1].creationTime,
         ),
       );
     }
@@ -77,8 +77,8 @@ List<DurationData> allDurationsData(
         value.duration.inSeconds - element.duration.inSeconds);
 }
 
-Duration averageDuration(List<RelapseData>? relapses) {
-  final List<DurationData> durations = allDurationsData(relapses);
+Duration averageDuration(List<HabbitEntryData>? entries) {
+  final List<DurationData> durations = allDurationsData(entries);
   Duration totalDuration = const Duration();
   for (var durationData in durations) {
     totalDuration += durationData.duration;

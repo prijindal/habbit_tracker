@@ -14,9 +14,9 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   void _downloadContent(BuildContext context) async {
-    final relapses =
-        await MyDatabase.instance.select(MyDatabase.instance.relapse).get();
-    String encoded = jsonEncode(relapses);
+    final entries =
+        await MyDatabase.instance.select(MyDatabase.instance.habbitEntry).get();
+    String encoded = jsonEncode(entries);
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -75,11 +75,11 @@ class ProfileScreen extends StatelessWidget {
         jsonEncoded = await File(result.files.single.path!).readAsString();
       }
       if (jsonEncoded != null) {
-        List<dynamic> relapses = jsonDecode(jsonEncoded);
+        List<dynamic> entries = jsonDecode(jsonEncoded);
         try {
           await MyDatabase.instance.batch((batch) {
-            batch.insertAll(MyDatabase.instance.relapse,
-                relapses.map((a) => RelapseData.fromJson(a)));
+            batch.insertAll(MyDatabase.instance.habbitEntry,
+                entries.map((a) => HabbitEntryData.fromJson(a)));
           });
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

@@ -3,13 +3,12 @@ import '../pages/profile.dart';
 
 class MyAppBar extends AppBar {
   MyAppBar(
-      {super.key, required this.context, this.title = const Text("Relapse")});
+      {super.key, required this.context, this.title = const Text("Habbit")});
 
   final BuildContext context;
 
   @override
   final Widget? title;
-  // Widget get title => const Text("Relapse");
 
   @override
   List<Widget>? get actions => [

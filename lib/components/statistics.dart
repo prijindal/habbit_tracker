@@ -10,10 +10,10 @@ enum StatsIntervals { oneWeek, oneMonth, threeMonths, oneYear, all }
 class StatisticsSubPage extends StatefulWidget {
   const StatisticsSubPage({
     super.key,
-    required this.relapses,
+    required this.entries,
   });
 
-  final List<RelapseData>? relapses;
+  final List<HabbitEntryData>? entries;
 
   @override
   State<StatisticsSubPage> createState() => _StatisticsSubPageState();
@@ -51,37 +51,37 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     }
   }
 
-  List<RelapseData> getRelapses() {
-    if (widget.relapses == null) {
+  List<HabbitEntryData> getEntries() {
+    if (widget.entries == null) {
       return [];
     }
     final now = DateTime.now();
-    final relapses = widget.relapses!;
+    final entries = widget.entries!;
     switch (statsIntervals) {
       case StatsIntervals.oneYear:
-        return relapses
+        return entries
             .where(
                 (element) => now.difference(element.creationTime).inDays <= 365)
             .toList();
       case StatsIntervals.threeMonths:
-        return relapses
+        return entries
             .where(
                 (element) => now.difference(element.creationTime).inDays <= 90)
             .toList();
       case StatsIntervals.oneMonth:
-        return relapses
+        return entries
             .where(
                 (element) => now.difference(element.creationTime).inDays <= 30)
             .toList();
       case StatsIntervals.oneWeek:
-        return relapses
+        return entries
             .where(
                 (element) => now.difference(element.creationTime).inDays <= 7)
             .toList();
       case StatsIntervals.all:
-        return relapses;
+        return entries;
       default:
-        return relapses;
+        return entries;
     }
   }
 
@@ -99,7 +99,7 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
   }
 
   getChartData() {
-    final durationsData = allDurationsData(getRelapses())
+    final durationsData = allDurationsData(getEntries())
       ..sort((a, b) =>
           a.start.millisecondsSinceEpoch - b.start.millisecondsSinceEpoch);
     return durationsData
@@ -143,33 +143,33 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
           ),
         ),
         ListTile(
-          title: const Text("Total relapses"),
+          title: const Text("Total entries"),
           subtitle: Text(
-            (getRelapses().length).toString(),
+            (getEntries().length).toString(),
           ),
         ),
         ListTile(
           title: const Text("Current streak"),
           subtitle: Text(
-            durationToStreak(currentStreak(getRelapses())),
+            durationToStreak(currentStreak(getEntries())),
           ),
         ),
         ListTile(
           title: const Text("Shortest streak"),
           subtitle: Text(
-            durationToStreak(shortestStreak(getRelapses())),
+            durationToStreak(shortestStreak(getEntries())),
           ),
         ),
         ListTile(
           title: const Text("Longest streak"),
           subtitle: Text(
-            durationToStreak(longestStreak(getRelapses())),
+            durationToStreak(longestStreak(getEntries())),
           ),
         ),
         ListTile(
           title: const Text("Average Duration"),
           subtitle: Text(
-            durationToStreak(averageDuration(getRelapses())),
+            durationToStreak(averageDuration(getEntries())),
           ),
         ),
         Container(
