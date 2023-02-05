@@ -3,6 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 import '../helpers/stats.dart';
 import '../models/core.dart';
 
+enum StatsIntervals { oneWeek, oneMonth, threeMonths, oneYear, all }
+
 class StatisticsSubPage extends StatefulWidget {
   const StatisticsSubPage({
     super.key,
@@ -16,6 +18,59 @@ class StatisticsSubPage extends StatefulWidget {
 }
 
 class _StatisticsSubPageState extends State<StatisticsSubPage> {
+  StatsIntervals statsIntervals = StatsIntervals.all;
+
+  String statsIntervalToText(StatsIntervals statsInterval) {
+    switch (statsInterval) {
+      case StatsIntervals.oneYear:
+        return "Last One Year";
+      case StatsIntervals.threeMonths:
+        return "Last Three Months";
+      case StatsIntervals.oneMonth:
+        return "Last One Month";
+      case StatsIntervals.oneWeek:
+        return "Last One Week";
+      case StatsIntervals.all:
+        return "All";
+      default:
+        return "None";
+    }
+  }
+
+  List<RelapseData> getRelapses() {
+    if (widget.relapses == null) {
+      return [];
+    }
+    final now = DateTime.now();
+    final relapses = widget.relapses!;
+    switch (statsIntervals) {
+      case StatsIntervals.oneYear:
+        return relapses
+            .where(
+                (element) => now.difference(element.creationTime).inDays <= 365)
+            .toList();
+      case StatsIntervals.threeMonths:
+        return relapses
+            .where(
+                (element) => now.difference(element.creationTime).inDays <= 90)
+            .toList();
+      case StatsIntervals.oneMonth:
+        return relapses
+            .where(
+                (element) => now.difference(element.creationTime).inDays <= 30)
+            .toList();
+      case StatsIntervals.oneWeek:
+        return relapses
+            .where(
+                (element) => now.difference(element.creationTime).inDays <= 7)
+            .toList();
+      case StatsIntervals.all:
+        return relapses;
+      default:
+        return relapses;
+    }
+  }
+
   String durationToStreak(Duration? streak) {
     if (streak == null) {
       return "No Data";
@@ -30,7 +85,7 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
   }
 
   getChartData() {
-    final durationsData = allDurationsData(widget.relapses)
+    final durationsData = allDurationsData(getRelapses())
       ..sort((a, b) =>
           a.start.millisecondsSinceEpoch - b.start.millisecondsSinceEpoch);
     return durationsData
@@ -52,33 +107,51 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     return ListView(
       children: [
         ListTile(
+          title: DropdownButton<StatsIntervals>(
+            value: statsIntervals,
+            items: StatsIntervals.values
+                .map(
+                  (e) => DropdownMenuItem<StatsIntervals>(
+                    value: e,
+                    child: Text(statsIntervalToText(e)),
+                  ),
+                )
+                .toList(),
+            onChanged: (newValue) {
+              setState(() {
+                statsIntervals = newValue ?? StatsIntervals.all;
+              });
+            },
+          ),
+        ),
+        ListTile(
           title: const Text("Total relapses"),
           subtitle: Text(
-            (widget.relapses?.length ?? 0).toString(),
+            (getRelapses().length).toString(),
           ),
         ),
         ListTile(
           title: const Text("Current streak"),
           subtitle: Text(
-            durationToStreak(currentStreak(widget.relapses)),
+            durationToStreak(currentStreak(getRelapses())),
           ),
         ),
         ListTile(
           title: const Text("Shortest streak"),
           subtitle: Text(
-            durationToStreak(shortestStreak(widget.relapses)),
+            durationToStreak(shortestStreak(getRelapses())),
           ),
         ),
         ListTile(
           title: const Text("Longest streak"),
           subtitle: Text(
-            durationToStreak(longestStreak(widget.relapses)),
+            durationToStreak(longestStreak(getRelapses())),
           ),
         ),
         ListTile(
           title: const Text("Average Duration"),
           subtitle: Text(
-            durationToStreak(averageDuration(widget.relapses)),
+            durationToStreak(averageDuration(getRelapses())),
           ),
         ),
         Container(
