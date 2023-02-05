@@ -64,7 +64,7 @@ class _CounterSubPageState extends State<CounterSubPage> {
 
   String _getLargestStreak() {
     var text = "No Data";
-    final streak = longestStreak(widget.relapses);
+    final streak = longestStreak(widget.relapses, includeCurrent: true);
     if (streak != null) {
       text = "Longest Streak: ${durationToStreak(streak)}";
     }

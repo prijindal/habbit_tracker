@@ -19,33 +19,47 @@ Duration? currentStreak(List<RelapseData>? relapses) {
   return null;
 }
 
-Duration? longestStreak(List<RelapseData>? relapses) {
-  if (relapses != null && relapses.isNotEmpty) {
-    return allDurationsData(relapses).last.duration;
+Duration? longestStreak(
+  List<RelapseData>? relapses, {
+  bool includeCurrent = false,
+}) {
+  if (relapses != null &&
+      relapses.isNotEmpty &&
+      allDurationsData(relapses, includeCurrent: includeCurrent).isNotEmpty) {
+    return allDurationsData(relapses, includeCurrent: includeCurrent)
+        .last
+        .duration;
   }
   return null;
 }
 
 Duration? shortestStreak(List<RelapseData>? relapses) {
-  if (relapses != null && relapses.isNotEmpty) {
+  if (relapses != null &&
+      relapses.isNotEmpty &&
+      allDurationsData(relapses).isNotEmpty) {
     return allDurationsData(relapses).first.duration;
   }
   return null;
 }
 
-List<DurationData> allDurationsData(List<RelapseData>? relapses) {
+List<DurationData> allDurationsData(
+  List<RelapseData>? relapses, {
+  bool includeCurrent = false,
+}) {
   final List<DurationData> allDurations = [];
   if (relapses != null && relapses.isNotEmpty) {
-    final now = DateTime.now();
-    allDurations.add(
-      DurationData(
-        duration: now.difference(
-          relapses[0].creationTime,
+    if (includeCurrent) {
+      final now = DateTime.now();
+      allDurations.add(
+        DurationData(
+          duration: now.difference(
+            relapses[0].creationTime,
+          ),
+          start: relapses[0].creationTime,
+          end: now,
         ),
-        start: relapses[0].creationTime,
-        end: now,
-      ),
-    );
+      );
+    }
     for (var i = 1; i < relapses.length; i++) {
       final newStreak =
           relapses[i - 1].creationTime.difference(relapses[i].creationTime);
