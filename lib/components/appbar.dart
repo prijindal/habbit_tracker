@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../pages/profile.dart';
 
 class MyAppBar extends AppBar {
-  MyAppBar({super.key, required this.context});
+  MyAppBar(
+      {super.key, required this.context, this.title = const Text("Relapse")});
 
   final BuildContext context;
 
   @override
-  Widget get title => const Text("Relapse");
+  final Widget? title;
+  // Widget get title => const Text("Relapse");
 
   @override
   List<Widget>? get actions => [

@@ -5,18 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "relapse",
+      "name": "habbit_tracker",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "relapse (profile mode)",
+      "name": "habbit_tracker (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "relapse (release mode)",
+      "name": "habbit_tracker (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"
