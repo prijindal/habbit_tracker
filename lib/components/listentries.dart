@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'entryform.dart';
-import '../components/deletedialog.dart';
+import '../components/deleteentrydialog.dart';
 import '../helpers/stats.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
