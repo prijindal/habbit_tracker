@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../helpers/stats.dart';
 import '../models/core.dart';
+import '../helpers/constants.dart';
 
 enum StatsIntervals { oneWeek, oneMonth, threeMonths, oneYear, all }
 
@@ -19,6 +21,18 @@ class StatisticsSubPage extends StatefulWidget {
 
 class _StatisticsSubPageState extends State<StatisticsSubPage> {
   StatsIntervals statsIntervals = StatsIntervals.all;
+
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then((instance) {
+      final preference = instance.getInt(STATS_INTERVAL_PREFERENCE);
+      setState(() {
+        statsIntervals =
+            StatsIntervals.values[preference ?? StatsIntervals.all.index];
+      });
+    });
+    super.initState();
+  }
 
   String statsIntervalToText(StatsIntervals statsInterval) {
     switch (statsInterval) {
@@ -117,10 +131,14 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
                   ),
                 )
                 .toList(),
-            onChanged: (newValue) {
+            onChanged: (newValue) async {
               setState(() {
                 statsIntervals = newValue ?? StatsIntervals.all;
               });
+              (await SharedPreferences.getInstance()).setInt(
+                STATS_INTERVAL_PREFERENCE,
+                newValue?.index ?? StatsIntervals.all.index,
+              );
             },
           ),
         ),
