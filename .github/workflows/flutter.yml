@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - "*"
+      - main
 
 name: Flutter
 
@@ -36,10 +36,11 @@ jobs:
 
       # - run: flutter build apk --release
       - run: flutter build appbundle --release
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: android
-      #     path: build/app/outputs
+      - uses: actions/upload-artifact@v3
+        with:
+          name: android
+          path: build/app/outputs
+          retention-days: 1
       - uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
@@ -65,15 +66,23 @@ jobs:
       - run: flutter pub get
       # - run: flutter test
       - run: flutter build web --release
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: web
-      #     path: build/web
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL }}'
+          channelId: live
+          projectId: habbit-tracker-prijindal
+      - uses: actions/upload-artifact@v3
+        with:
+          name: web
+          path: build/web
+          retention-days: 1
       - run: flutter build linux --release
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: linux
-      #     path: build/linux
+      - uses: actions/upload-artifact@v3
+        with:
+          name: linux
+          path: build/linux
+          retention-days: 1
 
   macos:
     runs-on: macos-latest
@@ -109,7 +118,8 @@ jobs:
       - run: flutter pub get
       # - run: flutter test
       - run: flutter build windows --release
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: windows
-      #     path: build/windows
+      - uses: actions/upload-artifact@v3
+        with:
+          name: windows
+          path: build/windows
+          retention-days: 1
