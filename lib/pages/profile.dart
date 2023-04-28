@@ -1,6 +1,10 @@
 import 'dart:convert';
 // import 'dart:html' as web_file;
 import 'package:file_picker/file_picker.dart';
+import 'package:habbit_tracker/models/theme.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../helpers/constants.dart';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -142,7 +146,46 @@ class ProfileScreen extends StatelessWidget {
             title: const Text("Upload from file"),
             onTap: () => _uploadContent(context),
           ),
+          const ThemeSelectorTile(),
         ],
+      ),
+    );
+  }
+}
+
+class ThemeSelectorTile extends StatelessWidget {
+  const ThemeSelectorTile({super.key});
+
+  String themeDataToText(ThemeMode themeMode) {
+    switch (themeMode) {
+      case ThemeMode.system:
+        return "System";
+      case ThemeMode.dark:
+        return "Dark";
+      case ThemeMode.light:
+        return "Light";
+      default:
+        return "None";
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeModeNotifier>(context);
+    return ListTile(
+      title: DropdownButton<ThemeMode>(
+        value: themeNotifier.getTheme(),
+        items: ThemeMode.values
+            .map(
+              (e) => DropdownMenuItem<ThemeMode>(
+                value: e,
+                child: Text(themeDataToText(e)),
+              ),
+            )
+            .toList(),
+        onChanged: (newValue) async {
+          await themeNotifier.setTheme(newValue ?? ThemeMode.system);
+        },
       ),
     );
   }
