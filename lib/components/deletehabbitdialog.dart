@@ -18,7 +18,7 @@ class DeleteHabbitDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop<bool>(false);
           },
           child: const Text("Cancel"),
         ),
@@ -30,7 +30,7 @@ class DeleteHabbitDialog extends StatelessWidget {
             (MyDatabase.instance.delete(MyDatabase.instance.habbit)
                   ..where((tbl) => tbl.id.equals(habbit.id)))
                 .go();
-            Navigator.of(context).pop();
+            Navigator.of(context).pop<bool>(true);
           },
           child: const Text("Yes"),
         )

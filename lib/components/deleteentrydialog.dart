@@ -19,7 +19,7 @@ class DeleteEntryDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop<bool>(false);
           },
           child: const Text("Cancel"),
         ),
@@ -28,7 +28,7 @@ class DeleteEntryDialog extends StatelessWidget {
             (MyDatabase.instance.delete(MyDatabase.instance.habbitEntry)
                   ..where((tbl) => tbl.id.equals(entry.id)))
                 .go();
-            Navigator.of(context).pop();
+            Navigator.of(context).pop<bool>(true);
           },
           child: const Text("Yes"),
         )

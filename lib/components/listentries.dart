@@ -20,8 +20,8 @@ class ListEntriesSubPage extends StatefulWidget {
 }
 
 class _ListEntriesSubPageState extends State<ListEntriesSubPage> {
-  void _confirmDelete(HabbitEntryData entry) {
-    showDialog(
+  Future<bool?> _confirmDelete(HabbitEntryData entry) {
+    return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return DeleteEntryDialog(
@@ -60,15 +60,16 @@ class _ListEntriesSubPageState extends State<ListEntriesSubPage> {
           return const Text("Loading...");
         }
         final entry = entries[index];
-        return ListTile(
-          title: Text(formatDate(entry.creationTime)),
-          subtitle: (entry.description == null || entry.description!.isEmpty)
-              ? null
-              : Text(entry.description!),
-          onTap: () => _editEntry(entry),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _confirmDelete(entry),
+        return Dismissible(
+          key: Key(entry.id),
+          background: Container(color: Colors.red),
+          confirmDismiss: (direction) => _confirmDelete(entry),
+          child: ListTile(
+            title: Text(formatDate(entry.creationTime)),
+            subtitle: (entry.description == null || entry.description!.isEmpty)
+                ? null
+                : Text(entry.description!),
+            onTap: () => _editEntry(entry),
           ),
         );
       },

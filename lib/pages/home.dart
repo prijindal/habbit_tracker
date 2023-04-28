@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import '../components/deletehabbitdialog.dart';
-import '../pages/habbit.dart';
+import 'package:habbit_tracker/components/habbittile.dart';
 import '../components/habbitform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
@@ -50,17 +49,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _confirmDelete(HabbitData habbit) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return DeleteHabbitDialog(
-          habbit: habbit,
-        );
-      },
-    );
-  }
-
   void _recordHabbit() async {
     final entries = await showDialog<HabbitCompanion?>(
       context: context,
@@ -89,25 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return const Text("Loading...");
           }
           final habbit = _habbits![index];
-          return ListTile(
-            title: Text(habbit.name),
-            subtitle:
-                (habbit.description == null || habbit.description!.isEmpty)
-                    ? null
-                    : Text(habbit.description!),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HabbitPage(
-                  habbit: habbit,
-                ),
-              ),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () => _confirmDelete(habbit),
-            ),
-          );
+          return HabbitTile(habbit: habbit);
         },
       ),
       floatingActionButton: FloatingActionButton(
