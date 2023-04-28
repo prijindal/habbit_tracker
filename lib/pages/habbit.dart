@@ -2,18 +2,18 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:habbit_tracker/components/habbitform.dart';
 import '../components/entryform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
-import '../components/appbar.dart';
 import '../components/counter.dart';
 import '../components/statistics.dart';
 import '../components/listentries.dart';
 
 class HabbitPage extends StatefulWidget {
-  const HabbitPage({super.key, required this.habbit});
+  const HabbitPage({super.key, required this.habbitId});
 
-  final HabbitData habbit;
+  final String habbitId;
 
   @override
   State<HabbitPage> createState() => HabbitPageState();
@@ -30,31 +30,47 @@ class HabbitPageState extends State<HabbitPage> {
         entries: _entries,
       ),
       ListEntriesSubPage(
-        habbit: widget.habbit,
+        habbit: widget.habbitId,
         entries: _entries,
       ),
     ];
     return widgetOptions.elementAt(_selectedIndex);
   }
 
+  HabbitData? _habbit;
   List<HabbitEntryData>? _entries;
-  StreamSubscription<List<HabbitEntryData>>? _subscription;
+  StreamSubscription<List<HabbitData>>? _subscription;
+  StreamSubscription<List<HabbitEntryData>>? _entriesSubscription;
 
   @override
   void initState() {
     _addWatcher();
+    _addEntriesWatcher();
     super.initState();
   }
 
   @override
   void dispose() {
     _subscription?.cancel();
+    _entriesSubscription?.cancel();
     super.dispose();
   }
 
   void _addWatcher() {
-    _subscription = (MyDatabase.instance.habbitEntry.select()
-          ..where((tbl) => tbl.habbit.equals(widget.habbit.id))
+    _subscription = (MyDatabase.instance.habbit.select()
+          ..where((tbl) => tbl.id.equals(widget.habbitId))
+          ..limit(1))
+        .watch()
+        .listen((event) {
+      setState(() {
+        _habbit = event.first;
+      });
+    });
+  }
+
+  void _addEntriesWatcher() {
+    _entriesSubscription = (MyDatabase.instance.habbitEntry.select()
+          ..where((tbl) => tbl.habbit.equals(widget.habbitId))
           ..orderBy(
             [
               (t) => OrderingTerm(
@@ -75,7 +91,7 @@ class HabbitPageState extends State<HabbitPage> {
     final entries = await showDialog<HabbitEntryCompanion?>(
       context: context,
       builder: (BuildContext context) {
-        return EntryDialogForm(habbit: widget.habbit.id);
+        return EntryDialogForm(habbit: widget.habbitId);
       },
     );
     if (entries != null) {
@@ -85,12 +101,67 @@ class HabbitPageState extends State<HabbitPage> {
     }
   }
 
+  void _editHabbit() async {
+    if (_habbit == null) {
+      throw StateError("habbit should not be null");
+    }
+    final habbit = await showDialog<HabbitCompanion?>(
+      context: context,
+      builder: (BuildContext context) {
+        return HabbitDialogForm(
+          name: _habbit!.name,
+          description: _habbit!.description,
+        );
+      },
+    );
+    if (habbit != null) {
+      (MyDatabase.instance.update(MyDatabase.instance.habbit)
+            ..where((tbl) => tbl.id.equals(widget.habbitId)))
+          .write(habbit);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(
-        context: context,
-        title: Text(widget.habbit.name),
+      appBar: AppBar(
+        title: _habbit == null
+            ? null
+            : RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  text: _habbit!.name,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  children: <TextSpan>[
+                    if (_habbit!.description != null &&
+                        _habbit!.description!.isNotEmpty)
+                      TextSpan(
+                        text: '\n${_habbit!.description}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                _editHabbit();
+              },
+              child: const Icon(
+                Icons.edit,
+                size: 26.0,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: _getWidget(),
@@ -120,7 +191,7 @@ class HabbitPageState extends State<HabbitPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _recordEntry,
         tooltip: 'Entry',
-        child: const Icon(Icons.thumb_down),
+        child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

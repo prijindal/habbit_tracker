@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:habbit_tracker/components/entryform.dart';
-import 'package:habbit_tracker/helpers/stats.dart';
-import 'package:habbit_tracker/models/drift.dart';
+import '../components/entryform.dart';
+import '../helpers/stats.dart';
+import '../models/drift.dart';
 import '../components/deletehabbitdialog.dart';
 import '../pages/habbit.dart';
 import '../models/core.dart';
@@ -65,17 +65,49 @@ class _HabbitTileState extends State<HabbitTile> {
     );
   }
 
-  void _recordEntry() async {
-    final entries = await showDialog<HabbitEntryCompanion?>(
+  void _editEntry(HabbitEntryData entry) async {
+    final editedData = await showDialog<HabbitEntryCompanion>(
       context: context,
       builder: (BuildContext context) {
-        return EntryDialogForm(habbit: widget.habbit.id);
+        return EntryDialogForm(
+          habbit: widget.habbit.id,
+          creationTime: entry.creationTime,
+          description: entry.description,
+        );
       },
     );
-    if (entries != null) {
-      await MyDatabase.instance
-          .into(MyDatabase.instance.habbitEntry)
-          .insert(entries);
+    if (editedData != null) {
+      (MyDatabase.instance.update(MyDatabase.instance.habbitEntry)
+            ..where((tbl) => tbl.id.equals(entry.id)))
+          .write(editedData);
+    }
+  }
+
+  void _recordEntry() async {
+    final entry = HabbitEntryCompanion(
+      creationTime: Value(DateTime.now()),
+      habbit: Value(widget.habbit.id),
+    );
+    final savedEntryId = await MyDatabase.instance
+        .into(MyDatabase.instance.habbitEntry)
+        .insert(entry);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("New entry for ${widget.habbit.name} saved"),
+          action: SnackBarAction(
+            label: "Edit",
+            onPressed: () async {
+              final savedEntry = await (MyDatabase.instance.habbitEntry.select()
+                    ..where(
+                      (tbl) => tbl.rowId.equals(savedEntryId),
+                    ))
+                  .getSingle();
+              _editEntry(savedEntry);
+            },
+          ),
+        ),
+      );
     }
   }
 
@@ -119,7 +151,7 @@ class _HabbitTileState extends State<HabbitTile> {
           context,
           MaterialPageRoute(
             builder: (context) => HabbitPage(
-              habbit: widget.habbit,
+              habbitId: widget.habbit.id,
             ),
           ),
         ),

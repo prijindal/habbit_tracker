@@ -12,7 +12,7 @@ class ListEntriesSubPage extends StatefulWidget {
     required this.entries,
   });
 
-  final HabbitData habbit;
+  final String habbit;
   final List<HabbitEntryData>? entries;
 
   @override
@@ -36,7 +36,7 @@ class _ListEntriesSubPageState extends State<ListEntriesSubPage> {
       context: context,
       builder: (BuildContext context) {
         return EntryDialogForm(
-          habbit: widget.habbit.id,
+          habbit: widget.habbit,
           creationTime: entry.creationTime,
           description: entry.description,
         );

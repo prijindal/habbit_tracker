@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:habbit_tracker/components/habbittile.dart';
+import '../pages/profile.dart';
+import '../components/habbittile.dart';
 import '../components/habbitform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
-import '../components/appbar.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -66,8 +66,26 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(
-        context: context,
+      appBar: AppBar(
+        title: const Text("Habbits"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()),
+                );
+              },
+              child: const Icon(
+                Icons.person,
+                size: 26.0,
+              ),
+            ),
+          ),
+        ],
       ),
       body: ListView.builder(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
@@ -77,7 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
             return const Text("Loading...");
           }
           final habbit = _habbits![index];
-          return HabbitTile(habbit: habbit);
+          return HabbitTile(
+            key: Key("${habbit.id}-tile"),
+            habbit: habbit,
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

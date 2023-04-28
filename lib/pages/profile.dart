@@ -20,11 +20,13 @@ class ProfileScreen extends StatelessWidget {
         await MyDatabase.instance.select(MyDatabase.instance.habbit).get();
     String encoded = jsonEncode({"habbits": habbits, "entries": entries});
     if (kIsWeb) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Not Supported"),
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Not Supported"),
+          ),
+        );
+      }
       // var blob = web_file.Blob([encoded], 'text/plain', 'native');
       // var anchorElement = web_file.AnchorElement(
       //   href: web_file.Url.createObjectUrlFromBlob(blob).toString(),
@@ -51,18 +53,21 @@ class ProfileScreen extends StatelessWidget {
         final path = p.join(downloadDirectory, 'db.json');
         final file = File(path);
         await file.writeAsString(encoded);
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Content saved at $path"),
-          ),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Content saved at $path"),
+            ),
+          );
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Can't find download directory"),
-          ),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Can't find download directory"),
+            ),
+          );
+        }
       }
     }
   }
@@ -95,25 +100,31 @@ class ProfileScreen extends StatelessWidget {
               ),
             );
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Successfully imported"),
-            ),
-          );
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Successfully imported"),
+              ),
+            );
+          }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString()),
-            ),
-          );
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(e.toString()),
+              ),
+            );
+          }
         }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Cancelled file upload"),
-        ),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Cancelled file upload"),
+          ),
+        );
+      }
     }
   }
 

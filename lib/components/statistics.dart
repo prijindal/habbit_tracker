@@ -25,7 +25,7 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
   @override
   void initState() {
     SharedPreferences.getInstance().then((instance) {
-      final preference = instance.getInt(STATS_INTERVAL_PREFERENCE);
+      final preference = instance.getInt(statsIntervalPreference);
       setState(() {
         statsIntervals =
             StatsIntervals.values[preference ?? StatsIntervals.all.index];
@@ -136,7 +136,7 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
                 statsIntervals = newValue ?? StatsIntervals.all;
               });
               (await SharedPreferences.getInstance()).setInt(
-                STATS_INTERVAL_PREFERENCE,
+                statsIntervalPreference,
                 newValue?.index ?? StatsIntervals.all.index,
               );
             },
@@ -220,7 +220,8 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
                 barGroups: getChartData(),
                 // read about it in the BarChartData section
               ),
-              swapAnimationDuration: Duration(milliseconds: 150), // Optional
+              swapAnimationDuration:
+                  const Duration(milliseconds: 150), // Optional
               swapAnimationCurve: Curves.linear, // Optional
             )),
       ],
