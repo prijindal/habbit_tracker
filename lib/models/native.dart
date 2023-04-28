@@ -5,13 +5,14 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import '../helpers/logger.dart';
 import "./core.dart";
 
 SharedDatabase constructDb() {
   final db = LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final path = p.join(dbFolder.path, 'db.sqlite');
-    print("Db Path: $path");
+    AppLogger.instance.d("Db Path: $path");
     final file = File(path);
     return NativeDatabase(file);
   });
