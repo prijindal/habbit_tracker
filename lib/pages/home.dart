@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import '../components/habbittile.dart';
+import 'package:habbit_tracker/components/habbittile.dart';
 import '../components/habbitform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';

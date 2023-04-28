@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import '../components/habbithero.dart';
 import '../components/entryform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
@@ -91,7 +90,7 @@ class HabbitPageState extends State<HabbitPage> {
     return Scaffold(
       appBar: MyAppBar(
         context: context,
-        title: HabbitTitleHero(habbit: widget.habbit),
+        title: Text(widget.habbit.name),
       ),
       body: Center(
         child: _getWidget(),

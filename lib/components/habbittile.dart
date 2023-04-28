@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import '../components/entryform.dart';
-import '../components/habbithero.dart';
-import '../helpers/stats.dart';
-import '../models/drift.dart';
+import 'package:habbit_tracker/components/entryform.dart';
+import 'package:habbit_tracker/helpers/stats.dart';
+import 'package:habbit_tracker/models/drift.dart';
 import '../components/deletehabbitdialog.dart';
 import '../pages/habbit.dart';
 import '../models/core.dart';
@@ -114,7 +113,7 @@ class _HabbitTileState extends State<HabbitTile> {
       },
       background: Container(color: Colors.red),
       child: ListTile(
-        title: HabbitTitleHero(habbit: widget.habbit),
+        title: Text(widget.habbit.name),
         subtitle: Text(_getCurrentStreak()),
         onTap: () => Navigator.push(
           context,
