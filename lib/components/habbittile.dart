@@ -167,6 +167,8 @@ class _HabbitTileState extends State<HabbitTile> {
         ),
       ),
       child: OpenContainer(
+        openColor: Theme.of(context).colorScheme.background,
+        closedColor: Theme.of(context).colorScheme.background,
         openBuilder: (context, action) =>
             HabbitPage(habbitId: widget.habbit.id),
         closedBuilder: (BuildContext _, VoidCallback openContainer) => ListTile(

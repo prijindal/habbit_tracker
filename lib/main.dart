@@ -5,14 +5,23 @@ import '../models/theme.dart';
 import './pages/home.dart';
 
 void main() => runApp(
-      ChangeNotifierProvider<ThemeModeNotifier>(
-        child: const MyApp(),
-        create: (context) => ThemeModeNotifier(ThemeMode.system),
-      ),
+      const MyApp(),
     );
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<ThemeModeNotifier>(
+      child: const MyMaterialApp(),
+      create: (context) => ThemeModeNotifier(ThemeMode.system),
+    );
+  }
+}
+
+class MyMaterialApp extends StatelessWidget {
+  const MyMaterialApp({super.key});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
