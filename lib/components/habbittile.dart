@@ -144,7 +144,28 @@ class _HabbitTileState extends State<HabbitTile> {
       confirmDismiss: (direction) {
         return _confirmDelete();
       },
-      background: Container(color: Colors.red),
+      background: Container(
+        color: Colors.red,
+        alignment: AlignmentDirectional.centerStart,
+        child: const Padding(
+          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+          child: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      secondaryBackground: Container(
+        color: Colors.red,
+        alignment: AlignmentDirectional.centerEnd,
+        child: const Padding(
+          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+          child: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+        ),
+      ),
       child: OpenContainer(
         openBuilder: (context, action) =>
             HabbitPage(habbitId: widget.habbit.id),

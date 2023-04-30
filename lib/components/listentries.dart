@@ -62,7 +62,28 @@ class _ListEntriesSubPageState extends State<ListEntriesSubPage> {
         final entry = entries[index];
         return Dismissible(
           key: Key(entry.id),
-          background: Container(color: Colors.red),
+          background: Container(
+            color: Colors.red,
+            alignment: AlignmentDirectional.centerStart,
+            child: const Padding(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          secondaryBackground: Container(
+            color: Colors.red,
+            alignment: AlignmentDirectional.centerEnd,
+            child: const Padding(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+          ),
           confirmDismiss: (direction) => _confirmDelete(entry),
           child: ListTile(
             title: Text(formatDate(entry.creationTime)),
