@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:drift/drift.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import '../components/entryform.dart';
 import '../helpers/stats.dart';
@@ -144,20 +145,25 @@ class _HabbitTileState extends State<HabbitTile> {
         return _confirmDelete();
       },
       background: Container(color: Colors.red),
-      child: ListTile(
-        title: Text(widget.habbit.name),
-        subtitle: Text(_getCurrentStreak()),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HabbitPage(
-              habbitId: widget.habbit.id,
-            ),
+      child: OpenContainer(
+        openBuilder: (context, action) =>
+            HabbitPage(habbitId: widget.habbit.id),
+        closedBuilder: (BuildContext _, VoidCallback openContainer) => ListTile(
+          title: Text(widget.habbit.name),
+          subtitle: Text(_getCurrentStreak()),
+          onTap: openContainer,
+          // onTap: () => Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => HabbitPage(
+          //       habbitId: widget.habbit.id,
+          //     ),
+          //   ),
+          // ),
+          trailing: IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => _recordEntry(),
           ),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () => _recordEntry(),
         ),
       ),
     );

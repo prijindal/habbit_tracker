@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animations/animations.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:habbit_tracker/components/habbitform.dart';
@@ -125,29 +126,28 @@ class HabbitPageState extends State<HabbitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _habbit == null
-            ? null
-            : RichText(
-                textAlign: TextAlign.start,
-                text: TextSpan(
-                  text: _habbit!.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  children: <TextSpan>[
-                    if (_habbit!.description != null &&
-                        _habbit!.description!.isNotEmpty)
-                      TextSpan(
-                        text: '\n${_habbit!.description}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+        title: _habbit == null ? null : Text(_habbit!.name),
+        // : RichText(
+        //     textAlign: TextAlign.start,
+        //     text: TextSpan(
+        //       text: _habbit!.name,
+        //       style: const TextStyle(
+        //         fontSize: 20,
+        //         fontWeight: FontWeight.w500,
+        //       ),
+        //       children: <TextSpan>[
+        //         if (_habbit!.description != null &&
+        //             _habbit!.description!.isNotEmpty)
+        //           TextSpan(
+        //             text: '\n${_habbit!.description}',
+        //             style: const TextStyle(
+        //               fontSize: 16,
+        //               fontWeight: FontWeight.normal,
+        //             ),
+        //           ),
+        //       ],
+        //     ),
+        //   ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
@@ -163,7 +163,18 @@ class HabbitPageState extends State<HabbitPage> {
           ),
         ],
       ),
-      body: Center(
+      body: PageTransitionSwitcher(
+        transitionBuilder: (
+          Widget child,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+        ) {
+          return FadeThroughTransition(
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+            child: child,
+          );
+        },
         child: _getWidget(),
       ),
       bottomNavigationBar: BottomNavigationBar(
