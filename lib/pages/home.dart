@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../pages/profile.dart';
 import '../components/habbittile.dart';
 import '../components/habbitform.dart';
@@ -87,19 +88,30 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
-        itemCount: _habbits != null ? _habbits!.length : 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (_habbits == null) {
-            return const Text("Loading...");
-          }
-          final habbit = _habbits![index];
-          return HabbitTile(
-            key: Key("${habbit.id}-tile"),
-            habbit: habbit,
-          );
-        },
+      body: AnimationLimiter(
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
+          itemCount: _habbits != null ? _habbits!.length : 1,
+          itemBuilder: (BuildContext context, int index) {
+            if (_habbits == null) {
+              return const Text("Loading...");
+            }
+            final habbit = _habbits![index];
+            return AnimationConfiguration.staggeredList(
+              position: index,
+              duration: const Duration(milliseconds: 375),
+              child: SlideAnimation(
+                verticalOffset: 50.0,
+                child: FadeInAnimation(
+                  child: HabbitTile(
+                    key: Key("${habbit.id}-tile"),
+                    habbit: habbit,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _recordHabbit,
