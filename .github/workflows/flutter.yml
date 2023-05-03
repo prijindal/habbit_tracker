@@ -71,6 +71,7 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           flags: app-flutter
+      - run: curl -sL https://firebase.tools | bash
       - run: echo "$FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL" > google-application-credentials.json
         env:
           FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL: ${{secrets.FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL}}
