@@ -147,6 +147,19 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
+  Widget _profileTile() {
+    try {
+      if (Firebase.apps.isNotEmpty) {
+        return const ProfileAuthTile();
+      }
+    } catch (e, stack) {
+      AppLogger.instance.e("Firebase.apps error", e, stack);
+    }
+    return const ListTile(
+      title: Text("Firebase is not available"),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,7 +175,7 @@ class ProfileScreen extends StatelessWidget {
             onTap: () => _uploadContent(context),
           ),
           const ThemeSelectorTile(),
-          if (Firebase.apps.isNotEmpty) const ProfileAuthTile(),
+          _profileTile(),
         ],
       ),
     );
