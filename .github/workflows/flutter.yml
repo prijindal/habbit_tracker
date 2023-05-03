@@ -74,7 +74,7 @@ jobs:
       - run: echo "$FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL" > google-application-credentials.json
         env:
           FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL: ${{secrets.FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL}}
-      - run: flutterfire configure -y --platforms=web
+      - run: flutterfire configure -y --platforms=web --ios-bundle-id=com.prijindal.habbit-tracker --macos-bundle-id=com.prijindal.habbit-tracker
         env:
           GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
       - run: flutter build web --release
