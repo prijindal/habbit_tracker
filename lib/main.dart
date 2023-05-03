@@ -1,12 +1,23 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../helpers/logger.dart';
-import '../models/theme.dart';
+import './firebase_options.dart';
+import './helpers/logger.dart';
+import './models/theme.dart';
 import './pages/home.dart';
 
-void main() => runApp(
-      const MyApp(),
+void main() async {
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
     );
+  } catch (e, stack) {
+    AppLogger.instance.e("Firebase cannot be initialized", e, stack);
+  }
+  return runApp(
+    const MyApp(),
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

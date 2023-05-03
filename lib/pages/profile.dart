@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 // import 'dart:html' as web_file;
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:habbit_tracker/helpers/logger.dart';
 import 'package:habbit_tracker/models/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 
@@ -9,18 +14,60 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import '../pages/login.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
+
+Future<String> _extractDbJson() async {
+  final entries =
+      await MyDatabase.instance.select(MyDatabase.instance.habbitEntry).get();
+  final habbits =
+      await MyDatabase.instance.select(MyDatabase.instance.habbit).get();
+  String encoded = jsonEncode({"habbits": habbits, "entries": entries});
+  return encoded;
+}
+
+Future<void> _jsonToDb(String jsonEncoded, BuildContext context) async {
+  final decoded = jsonDecode(jsonEncoded);
+  List<dynamic> entries = decoded["entries"];
+  List<dynamic> habbits = decoded["habbits"];
+  try {
+    await MyDatabase.instance.batch((batch) {
+      batch.insertAll(
+        MyDatabase.instance.habbit,
+        habbits.map(
+          (e) => HabbitData.fromJson(e),
+        ),
+      );
+      batch.insertAll(
+        MyDatabase.instance.habbitEntry,
+        entries.map(
+          (a) => HabbitEntryData.fromJson(a),
+        ),
+      );
+    });
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Successfully imported"),
+        ),
+      );
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
+}
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   void _downloadContent(BuildContext context) async {
-    final entries =
-        await MyDatabase.instance.select(MyDatabase.instance.habbitEntry).get();
-    final habbits =
-        await MyDatabase.instance.select(MyDatabase.instance.habbit).get();
-    String encoded = jsonEncode({"habbits": habbits, "entries": entries});
     if (kIsWeb) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -54,6 +101,7 @@ class ProfileScreen extends StatelessWidget {
       if (downloadDirectory != null) {
         final path = p.join(downloadDirectory, 'db.json');
         final file = File(path);
+        final encoded = await _extractDbJson();
         await file.writeAsString(encoded);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -84,39 +132,8 @@ class ProfileScreen extends StatelessWidget {
         jsonEncoded = await File(result.files.single.path!).readAsString();
       }
       if (jsonEncoded != null) {
-        final decoded = jsonDecode(jsonEncoded);
-        List<dynamic> entries = decoded["entries"];
-        List<dynamic> habbits = decoded["habbits"];
-        try {
-          await MyDatabase.instance.batch((batch) {
-            batch.insertAll(
-              MyDatabase.instance.habbit,
-              habbits.map(
-                (e) => HabbitData.fromJson(e),
-              ),
-            );
-            batch.insertAll(
-              MyDatabase.instance.habbitEntry,
-              entries.map(
-                (a) => HabbitEntryData.fromJson(a),
-              ),
-            );
-          });
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Successfully imported"),
-              ),
-            );
-          }
-        } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(e.toString()),
-              ),
-            );
-          }
+        if (context.mounted) {
+          await _jsonToDb(jsonEncoded, context);
         }
       }
     } else {
@@ -145,9 +162,145 @@ class ProfileScreen extends StatelessWidget {
             onTap: () => _uploadContent(context),
           ),
           const ThemeSelectorTile(),
+          if (Firebase.apps.isNotEmpty) ProfileAuthTile(),
         ],
       ),
     );
+  }
+}
+
+class ProfileAuthTile extends StatefulWidget {
+  const ProfileAuthTile({super.key});
+
+  @override
+  State<ProfileAuthTile> createState() => _ProfileAuthTileState();
+}
+
+class _ProfileAuthTileState extends State<ProfileAuthTile> {
+  StreamSubscription<User?>? _subscription;
+  User? user;
+  FullMetadata? metadata;
+
+  @override
+  void initState() {
+    user = FirebaseAuth.instance.currentUser;
+    _subscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+      setState(() {
+        this.user = user;
+      });
+      _syncMetadata();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _downloadFile() async {
+    if (user != null) {
+      try {
+        final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
+        final dbBytes = await ref.getData();
+        if (dbBytes != null) {
+          final jsonEncoded = String.fromCharCodes(dbBytes);
+          if (context.mounted) {
+            await _jsonToDb(jsonEncoded, context);
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("File downloaded successfully"),
+                ),
+              );
+            }
+          }
+        }
+      } on FirebaseException catch (e, stack) {
+        AppLogger.instance.e("Error while downloading", e, stack);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message ?? "Error while downloading"),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _uploadFile() async {
+    if (user != null) {
+      try {
+        final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
+        final encoded = await _extractDbJson();
+        await ref.putString(encoded);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("File uploaded successfully"),
+            ),
+          );
+        }
+      } on FirebaseException catch (e, stack) {
+        AppLogger.instance.e("Error while uploading", e, stack);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message ?? "Error while uploading"),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  void _syncMetadata() async {
+    final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
+    final metadata = await ref.getMetadata();
+    print(metadata.updated);
+    setState(() {
+      this.metadata = metadata;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return user != null
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text("Upload Database"),
+                onTap: () async {
+                  _uploadFile();
+                },
+              ),
+              ListTile(
+                title: const Text("Download database"),
+                subtitle: metadata == null
+                    ? const Text("Database not synced yet")
+                    : Text("Last Synced at ${metadata!.updated}"),
+                onTap: () async {
+                  _downloadFile();
+                },
+              )
+            ],
+          )
+        : ListTile(
+            title: const Text(
+              "Login",
+            ),
+            onTap: () async {
+              await Navigator.push<UserCredential?>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+              );
+            },
+          );
   }
 }
 

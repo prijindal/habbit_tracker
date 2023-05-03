@@ -175,14 +175,6 @@ class _HabbitTileState extends State<HabbitTile> {
           title: Text(widget.habbit.name),
           subtitle: Text(_getCurrentStreak()),
           onTap: openContainer,
-          // onTap: () => Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => HabbitPage(
-          //       habbitId: widget.habbit.id,
-          //     ),
-          //   ),
-          // ),
           trailing: IconButton(
             icon: const Icon(Icons.add),
             onPressed: () => _recordEntry(),
