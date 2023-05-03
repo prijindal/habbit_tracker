@@ -73,10 +73,10 @@ jobs:
           flags: app-flutter
       - run: echo "$FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL" > google-application-credentials.json
         env:
-          - FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL=${{secrets.FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL}}
+          FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL: ${{secrets.FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL}}
       - run: flutterfire configure -y
         env:
-          - GOOGLE_APPLICATION_CREDENTIALS="google-application-credentials.json"
+          GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
       - run: flutter build web --release
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
