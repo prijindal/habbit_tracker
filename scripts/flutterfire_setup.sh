@@ -5,9 +5,7 @@ curl -sL https://firebase.tools | bash
 
 echo "$FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL" > google-application-credentials.json
 
-export GOOGLE_APPLICATION_CREDENTIALS="google-application-credentials.json"
-
-flutterfire configure -y \
+env GOOGLE_APPLICATION_CREDENTIALS="google-application-credentials.json" flutterfire configure -y \
   --platforms=android,ios,macos,web,linux,windows \
   --ios-bundle-id=com.prijindal.habbit-tracker \
   --macos-bundle-id=com.prijindal.habbit-tracker \
