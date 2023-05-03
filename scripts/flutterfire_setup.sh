@@ -1,9 +1,11 @@
 #!/bin/sh
-# set -ex
+set -e
 
 curl -sL https://firebase.tools | bash
 
 echo "$FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL" > google-application-credentials.json
+
+cat google-application-credentials.json
 
 env GOOGLE_APPLICATION_CREDENTIALS="google-application-credentials.json" flutterfire configure -y \
   --platforms=android,ios,macos,web,linux,windows \
