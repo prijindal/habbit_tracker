@@ -162,7 +162,7 @@ class ProfileScreen extends StatelessWidget {
             onTap: () => _uploadContent(context),
           ),
           const ThemeSelectorTile(),
-          if (Firebase.apps.isNotEmpty) ProfileAuthTile(),
+          if (Firebase.apps.isNotEmpty) const ProfileAuthTile(),
         ],
       ),
     );
@@ -259,7 +259,6 @@ class _ProfileAuthTileState extends State<ProfileAuthTile> {
   void _syncMetadata() async {
     final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
     final metadata = await ref.getMetadata();
-    print(metadata.updated);
     setState(() {
       this.metadata = metadata;
     });
