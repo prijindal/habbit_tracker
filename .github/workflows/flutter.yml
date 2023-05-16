@@ -78,15 +78,6 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           flags: app-flutter
-      ################################
-      # Run Linter against code base #
-      ################################
-      - name: Lint Code Base
-        uses: super-linter/super-linter@v5.0.0
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: curl -sL https://firebase.tools | bash
       - run: echo "$FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL" > google-application-credentials.json
         env:

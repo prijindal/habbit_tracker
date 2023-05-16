@@ -85,19 +85,6 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     }
   }
 
-  String durationToStreak(Duration? streak) {
-    if (streak == null) {
-      return "No Data";
-    }
-    if (streak.inDays > 0) {
-      return "${streak.inDays}d ${streak.inHours % 24}h";
-    }
-    if (streak.inHours > 0) {
-      return "${streak.inHours % 24}h ${streak.inMinutes % 60}m";
-    }
-    return "${streak.inMinutes % 60}m";
-  }
-
   getChartData() {
     final durationsData = allDurationsData(getEntries())
       ..sort((a, b) =>

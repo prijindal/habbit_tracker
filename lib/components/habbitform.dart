@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:habbit_tracker/models/config.dart';
+import 'package:habbit_tracker/models/drift.dart';
 import '../models/core.dart';
 
 class HabbitDialogForm extends StatefulWidget {
@@ -17,6 +18,31 @@ class HabbitDialogForm extends StatefulWidget {
 
   @override
   State<HabbitDialogForm> createState() => _HabbitDialogFormState();
+
+  static editEntry({
+    required BuildContext context,
+    required String habbitId,
+    required HabbitData? habbit,
+  }) async {
+    if (habbit == null) {
+      throw StateError("habbit should not be null");
+    }
+    final editedData = await showDialog<HabbitEntryCompanion>(
+      context: context,
+      builder: (BuildContext context) {
+        return HabbitDialogForm(
+          name: habbit.name,
+          description: habbit.description,
+          config: habbit.config,
+        );
+      },
+    );
+    if (editedData != null) {
+      (MyDatabase.instance.update(MyDatabase.instance.habbitEntry)
+            ..where((tbl) => tbl.id.equals(habbitId)))
+          .write(editedData);
+    }
+  }
 }
 
 class _HabbitDialogFormState extends State<HabbitDialogForm> {

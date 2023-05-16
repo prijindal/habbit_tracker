@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:habbit_tracker/models/theme.dart';
 import 'entryform.dart';
 import '../components/deleteentrydialog.dart';
 import '../helpers/stats.dart';
@@ -74,49 +75,19 @@ class HabbitEntryTile extends StatelessWidget {
   }
 
   void _editEntry(BuildContext context) async {
-    final editedData = await showDialog<HabbitEntryCompanion>(
+    await EntryDialogForm.editEntry(
       context: context,
-      builder: (BuildContext context) {
-        return EntryDialogForm(
-          habbit: habbit,
-          creationTime: entry.creationTime,
-          description: entry.description,
-        );
-      },
+      habbitId: habbit,
+      entry: entry,
     );
-    if (editedData != null) {
-      (MyDatabase.instance.update(MyDatabase.instance.habbitEntry)
-            ..where((tbl) => tbl.id.equals(entry.id)))
-          .write(editedData);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(entry.id),
-      background: Container(
-        color: Colors.red,
-        alignment: AlignmentDirectional.centerStart,
-        child: const Padding(
-          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
-          child: Icon(
-            Icons.delete,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      secondaryBackground: Container(
-        color: Colors.red,
-        alignment: AlignmentDirectional.centerEnd,
-        child: const Padding(
-          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
-          child: Icon(
-            Icons.delete,
-            color: Colors.white,
-          ),
-        ),
-      ),
+      background: deleteDismissible,
+      secondaryBackground: deleteDismissible,
       confirmDismiss: (direction) => _confirmDelete(context),
       child: ListTile(
         title: Text(formatDate(entry.creationTime)),

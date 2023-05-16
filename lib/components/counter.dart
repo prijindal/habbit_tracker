@@ -50,18 +50,6 @@ class _CounterSubPageState extends State<CounterSubPage> {
     return "${streak.inDays}d ${streak.inHours % 24}h ${streak.inMinutes % 60}m ${streak.inSeconds % 60}s";
   }
 
-  String _getCurrentStreak() {
-    var text = "No Data";
-    final streak = currentStreak(widget.entries);
-    if (streak != null) {
-      text = "${streak.inDays} Days";
-    }
-    if (streak != null) {
-      text = "Current Streak: ${durationToStreak(streak)}";
-    }
-    return text;
-  }
-
   String _getLargestStreak() {
     var text = "No Data";
     final streak = longestStreak(widget.entries, includeCurrent: true);
@@ -79,7 +67,7 @@ class _CounterSubPageState extends State<CounterSubPage> {
           : Column(children: [
               _daysSince(),
               Text(
-                _getCurrentStreak(),
+                currentStreakString(widget.entries),
               ),
               Text(
                 _getLargestStreak(),

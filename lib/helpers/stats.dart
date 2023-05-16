@@ -12,11 +12,56 @@ class DurationData {
   final DateTime end;
 }
 
+String durationToStreak(Duration? streak) {
+  if (streak == null) {
+    return "No Data";
+  }
+  if (streak.inDays > 0) {
+    return "${streak.inDays}d ${streak.inHours % 24}h";
+  }
+  if (streak.inHours > 0) {
+    return "${streak.inHours % 24}h ${streak.inMinutes % 60}m";
+  }
+  return "${streak.inMinutes % 60}m";
+}
+
 Duration? currentStreak(List<HabbitEntryData>? entries) {
   if (entries != null && entries.isNotEmpty) {
     return DateTime.now().difference(entries[0].creationTime);
   }
   return null;
+}
+
+String currentStreakString(List<HabbitEntryData>? entries) {
+  var text = "No Data";
+  final streak = currentStreak(entries);
+  if (streak != null) {
+    text = "${streak.inDays} Days";
+  }
+  if (streak != null) {
+    text = "Current Streak: ${durationToStreak(streak)}";
+  }
+  return text;
+}
+
+String getTodayCount(List<HabbitEntryData>? entries) {
+  var text = "No Data";
+  if (entries == null) {
+    return text;
+  }
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final todayEntries = entries.where((element) {
+    final aDate = DateTime(element.creationTime.year,
+        element.creationTime.month, element.creationTime.day);
+    return aDate == today;
+  });
+  if (todayEntries.isEmpty) {
+    return text;
+  }
+  text = "Today: ${todayEntries.length}";
+  return text;
 }
 
 Duration? longestStreak(

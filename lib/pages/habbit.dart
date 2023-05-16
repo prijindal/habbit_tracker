@@ -99,24 +99,11 @@ class HabbitPageState extends State<HabbitPage> {
   }
 
   void _editHabbit() async {
-    if (_habbit == null) {
-      throw StateError("habbit should not be null");
-    }
-    final habbit = await showDialog<HabbitCompanion?>(
+    await HabbitDialogForm.editEntry(
       context: context,
-      builder: (BuildContext context) {
-        return HabbitDialogForm(
-          name: _habbit!.name,
-          description: _habbit!.description,
-          config: _habbit!.config,
-        );
-      },
+      habbitId: widget.habbitId,
+      habbit: _habbit,
     );
-    if (habbit != null) {
-      (MyDatabase.instance.update(MyDatabase.instance.habbit)
-            ..where((tbl) => tbl.id.equals(widget.habbitId)))
-          .write(habbit);
-    }
   }
 
   ThemeData? _getThemeData() {

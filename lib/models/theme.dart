@@ -3,6 +3,30 @@ import 'package:habbit_tracker/helpers/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../helpers/constants.dart';
 
+final deleteDismissible = Container(
+  color: Colors.red,
+  alignment: AlignmentDirectional.centerStart,
+  child: const Padding(
+    padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+    child: Icon(
+      Icons.delete,
+      color: Colors.white,
+    ),
+  ),
+);
+
+final editDismissible = Container(
+  color: Colors.blue,
+  alignment: AlignmentDirectional.centerEnd,
+  child: const Padding(
+    padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+    child: Icon(
+      Icons.edit,
+      color: Colors.white,
+    ),
+  ),
+);
+
 class ThemeModeNotifier with ChangeNotifier {
   ThemeMode _themeMode;
 
