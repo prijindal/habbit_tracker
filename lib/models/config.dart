@@ -1,15 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum QuickAddButtonConfigType {
-  addSubtract,
-  add,
-}
-
-enum QuickSubtitleType {
-  currentStreak,
-  todayCount,
-}
-
 class HabbitConfig {
   final String name;
   final String code;
@@ -18,19 +8,11 @@ class HabbitConfig {
   final QuickAddButtonConfigType quickAddButtonConfigType;
   final QuickSubtitleType quickSubtitleType;
 
-  HabbitConfig({
-    required this.name,
-    required this.code,
-    required this.colorScheme,
-    required this.quickAddButtonConfigType,
-    required this.quickSubtitleType,
-  });
-
   static final positive = HabbitConfig(
     name: "Positive Habbit",
     code: "positive_habbit",
     colorScheme: ColorScheme.fromSwatch(
-      primarySwatch: Colors.green,
+      primarySwatch: Colors.lightGreen,
       primaryColorDark: Colors.green,
     ),
     quickAddButtonConfigType: QuickAddButtonConfigType.addSubtract,
@@ -41,7 +23,7 @@ class HabbitConfig {
     code: "negative_habbit",
     colorScheme: ColorScheme.fromSwatch(
       primarySwatch: Colors.purple,
-      primaryColorDark: Colors.purple,
+      primaryColorDark: Colors.deepPurple,
     ),
     quickAddButtonConfigType: QuickAddButtonConfigType.add,
     quickSubtitleType: QuickSubtitleType.currentStreak,
@@ -52,6 +34,14 @@ class HabbitConfig {
     HabbitConfig.negative,
   ];
 
+  HabbitConfig({
+    required this.name,
+    required this.code,
+    required this.colorScheme,
+    required this.quickAddButtonConfigType,
+    required this.quickSubtitleType,
+  });
+
   static HabbitConfig getConfig(String? code) => HabbitConfig.values.firstWhere(
         (element) => element.code == code,
         orElse: () => HabbitConfig.positive,
@@ -60,6 +50,7 @@ class HabbitConfig {
   ThemeData getThemeData(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = this.colorScheme;
+
     return theme.copyWith(
       colorScheme: theme.colorScheme.copyWith(
         primary: colorScheme.primary,
@@ -67,4 +58,14 @@ class HabbitConfig {
       ),
     );
   }
+}
+
+enum QuickAddButtonConfigType {
+  addSubtract,
+  add,
+}
+
+enum QuickSubtitleType {
+  currentStreak,
+  todayCount,
 }

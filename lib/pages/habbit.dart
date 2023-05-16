@@ -23,6 +23,19 @@ class HabbitPage extends StatefulWidget {
 
 class HabbitPageState extends State<HabbitPage> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    _addWatcher();
+    _addEntriesWatcher();
+    super.initState();
+  }
+
+  HabbitData? _habbit;
+  List<HabbitEntryData>? _entries;
+  StreamSubscription<List<HabbitData>>? _subscription;
+  StreamSubscription<List<HabbitEntryData>>? _entriesSubscription;
+
   Widget _getWidget() {
     final List<Widget> widgetOptions = <Widget>[
       CounterSubPage(
@@ -36,26 +49,8 @@ class HabbitPageState extends State<HabbitPage> {
         entries: _entries,
       ),
     ];
+
     return widgetOptions.elementAt(_selectedIndex);
-  }
-
-  HabbitData? _habbit;
-  List<HabbitEntryData>? _entries;
-  StreamSubscription<List<HabbitData>>? _subscription;
-  StreamSubscription<List<HabbitEntryData>>? _entriesSubscription;
-
-  @override
-  void initState() {
-    _addWatcher();
-    _addEntriesWatcher();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    _entriesSubscription?.cancel();
-    super.dispose();
   }
 
   void _addWatcher() {
@@ -192,6 +187,13 @@ class HabbitPageState extends State<HabbitPage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _entriesSubscription?.cancel();
+    super.dispose();
   }
 
   @override

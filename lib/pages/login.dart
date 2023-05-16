@@ -17,12 +17,25 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  _signUpUser() async {
-    try {
+  Future<UserCredential> _getCreds(String type) async {
+    if (type == "login") {
+      final creds = await auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      return creds;
+    } else {
       final creds = await auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
+      return creds;
+    }
+  }
+
+  _signUpUser() async {
+    try {
+      final creds = await _getCreds("signup");
       if (context.mounted) {
         Navigator.of(context).pop<UserCredential>(creds);
       }
@@ -43,10 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = true;
       });
-      final creds = await auth.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+      final creds = await _getCreds("login");
       if (context.mounted) {
         Navigator.of(context).pop<UserCredential>(creds);
       }
