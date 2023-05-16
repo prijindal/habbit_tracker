@@ -124,12 +124,12 @@ jobs:
       - run: flutterfire configure -y --platforms=macos,ios --ios-bundle-id=com.prijindal.habbit-tracker --macos-bundle-id=com.prijindal.habbit-tracker --web-app-id=1:739292996360:web:5c24f4c3b47c73559e82bd --android-package-name=com.prijindal.habbit_tracker
         env:
           GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
-      - run: flutter build macos --release
+      # - run: flutter build macos --release
       # - uses: actions/upload-artifact@v3
       #   with:
       #     name: macos
       #     path: build/macos
-      - run: flutter build ios --release --no-codesign
+      # - run: flutter build ios --release --no-codesign
       # - uses: actions/upload-artifact@v3
       #   with:
       #     name: ios
