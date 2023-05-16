@@ -39,6 +39,7 @@ class HabbitPageState extends State<HabbitPage> {
   Widget _getWidget() {
     final List<Widget> widgetOptions = <Widget>[
       CounterSubPage(
+        habbit: _habbit,
         entries: _entries,
       ),
       StatisticsSubPage(

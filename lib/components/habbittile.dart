@@ -114,6 +114,16 @@ class _HabbitTileState extends State<HabbitTile> {
     }
   }
 
+  String _getTodayCount() {
+    var text = "No Data";
+    final count = getTodayCount(_habbitEntries);
+    if (count == 0) {
+      return text;
+    }
+    text = "Today: $count";
+    return text;
+  }
+
   void _removeEntry() async {
     final lastEntry = await (MyDatabase.instance.habbitEntry.select()
           ..where((tbl) => tbl.habbit.equals(widget.habbit.id))
@@ -157,7 +167,7 @@ class _HabbitTileState extends State<HabbitTile> {
       case QuickSubtitleType.currentStreak:
         return Text(currentStreakString(_habbitEntries));
       case QuickSubtitleType.todayCount:
-        return Text(getTodayCount(_habbitEntries));
+        return Text(_getTodayCount());
     }
   }
 

@@ -27,7 +27,7 @@ class HabbitDialogForm extends StatefulWidget {
     if (habbit == null) {
       throw StateError("habbit should not be null");
     }
-    final editedData = await showDialog<HabbitEntryCompanion>(
+    final editedData = await showDialog<HabbitCompanion>(
       context: context,
       builder: (BuildContext context) {
         return HabbitDialogForm(
@@ -38,7 +38,7 @@ class HabbitDialogForm extends StatefulWidget {
       },
     );
     if (editedData != null) {
-      (MyDatabase.instance.update(MyDatabase.instance.habbitEntry)
+      (MyDatabase.instance.update(MyDatabase.instance.habbit)
             ..where((tbl) => tbl.id.equals(habbitId)))
           .write(editedData);
     }

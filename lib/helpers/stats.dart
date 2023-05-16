@@ -44,10 +44,9 @@ String currentStreakString(List<HabbitEntryData>? entries) {
   return text;
 }
 
-String getTodayCount(List<HabbitEntryData>? entries) {
-  var text = "No Data";
+int getTodayCount(List<HabbitEntryData>? entries) {
   if (entries == null) {
-    return text;
+    return 0;
   }
 
   final now = DateTime.now();
@@ -57,11 +56,7 @@ String getTodayCount(List<HabbitEntryData>? entries) {
         element.creationTime.month, element.creationTime.day);
     return aDate == today;
   });
-  if (todayEntries.isEmpty) {
-    return text;
-  }
-  text = "Today: ${todayEntries.length}";
-  return text;
+  return todayEntries.length;
 }
 
 Duration? longestStreak(

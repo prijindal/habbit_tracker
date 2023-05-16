@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:habbit_tracker/models/config.dart';
 import '../helpers/stats.dart';
 import '../models/core.dart';
 
@@ -8,8 +9,10 @@ class CounterSubPage extends StatefulWidget {
   const CounterSubPage({
     super.key,
     required this.entries,
+    required this.habbit,
   });
   final List<HabbitEntryData>? entries;
+  final HabbitData? habbit;
 
   @override
   State<CounterSubPage> createState() => _CounterSubPageState();
@@ -59,20 +62,70 @@ class _CounterSubPageState extends State<CounterSubPage> {
     return text;
   }
 
+  List<Widget> _buildTitle() {
+    final habbit = widget.habbit;
+    final list = <Widget>[];
+    if (habbit == null) {
+      return list;
+    }
+    final config = HabbitConfig.getConfig(habbit.config);
+    switch (config.counterTitle) {
+      case CounterTitle.daysStreak:
+        list.addAll(
+          [
+            const Text("Streak"),
+            _daysSince(),
+          ],
+        );
+        break;
+      case CounterTitle.todayCount:
+        list.addAll(
+          [
+            const Text("Today"),
+            Text(
+              getTodayCount(widget.entries).toString(),
+              style: const TextStyle(
+                fontSize: 48,
+              ),
+            ),
+          ],
+        );
+        break;
+    }
+    return list;
+  }
+
+  List<Widget> _buildExtraCounters() {
+    final habbit = widget.habbit;
+    final list = <Widget>[];
+    if (habbit == null) {
+      return list;
+    }
+    final config = HabbitConfig.getConfig(habbit.config);
+    for (var element in config.extraCounters) {
+      switch (element) {
+        case ExtraCounter.currentStreak:
+          list.add(Text(currentStreakString(widget.entries)));
+          break;
+        case ExtraCounter.largestStreak:
+          list.add(Text(_getLargestStreak()));
+          break;
+      }
+    }
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: widget.entries == null
           ? const Text("Loading")
-          : Column(children: [
-              _daysSince(),
-              Text(
-                currentStreakString(widget.entries),
-              ),
-              Text(
-                _getLargestStreak(),
-              )
-            ]),
+          : Column(
+              children: [
+                ..._buildTitle(),
+                ..._buildExtraCounters(),
+              ],
+            ),
     );
   }
 }
