@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../helpers/stats.dart' as stats;
+import '../models/core.dart';
 
 class HabbitConfig {
   final String name;
@@ -11,6 +13,8 @@ class HabbitConfig {
   final CounterTitle counterTitle;
   final List<ExtraCounter> extraCounters;
 
+  final List<HabbitStatistic> statistics;
+
   static final positive = HabbitConfig(
     name: "Positive Habbit",
     code: "positive_habbit",
@@ -22,6 +26,9 @@ class HabbitConfig {
     quickSubtitleType: QuickSubtitleType.todayCount,
     counterTitle: CounterTitle.todayCount,
     extraCounters: [],
+    statistics: [
+      HabbitStatistic.total,
+    ],
   );
 
   static final negative = HabbitConfig(
@@ -38,6 +45,13 @@ class HabbitConfig {
       ExtraCounter.currentStreak,
       ExtraCounter.largestStreak,
     ],
+    statistics: [
+      HabbitStatistic.total,
+      HabbitStatistic.currentStreak,
+      HabbitStatistic.shortestStreak,
+      HabbitStatistic.longestStreak,
+      HabbitStatistic.averageDuration,
+    ],
   );
 
   static final values = [
@@ -53,6 +67,7 @@ class HabbitConfig {
     required this.quickSubtitleType,
     required this.counterTitle,
     required this.extraCounters,
+    required this.statistics,
   });
 
   static HabbitConfig getConfig(String? code) => HabbitConfig.values.firstWhere(
@@ -91,4 +106,43 @@ enum CounterTitle {
 enum ExtraCounter {
   currentStreak,
   largestStreak,
+}
+
+class HabbitStatistic {
+  String name;
+  String Function(List<HabbitEntryData> entries) transform;
+
+  HabbitStatistic({
+    required this.name,
+    required this.transform,
+  });
+
+  static final total = HabbitStatistic(
+    name: "Total entries",
+    transform: (entries) => entries.length.toString(),
+  );
+
+  static final currentStreak = HabbitStatistic(
+    name: "Current streak",
+    transform: (entries) =>
+        stats.durationToStreak(stats.currentStreak(entries)),
+  );
+
+  static final shortestStreak = HabbitStatistic(
+    name: "Shortest streak",
+    transform: (entries) =>
+        stats.durationToStreak(stats.shortestStreak(entries)),
+  );
+
+  static final longestStreak = HabbitStatistic(
+    name: "Longest streak",
+    transform: (entries) =>
+        stats.durationToStreak(stats.longestStreak(entries)),
+  );
+
+  static final averageDuration = HabbitStatistic(
+    name: "Average Duration",
+    transform: (entries) =>
+        stats.durationToStreak(stats.averageDuration(entries)),
+  );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:habbit_tracker/models/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../helpers/stats.dart';
 import '../models/core.dart';
@@ -11,9 +12,11 @@ class StatisticsSubPage extends StatefulWidget {
   const StatisticsSubPage({
     super.key,
     required this.entries,
+    required this.habbit,
   });
 
   final List<HabbitEntryData>? entries;
+  final HabbitData? habbit;
 
   @override
   State<StatisticsSubPage> createState() => _StatisticsSubPageState();
@@ -103,6 +106,26 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
         .toList();
   }
 
+  List<Widget> _buildStats() {
+    final habbit = widget.habbit;
+    final list = <ListTile>[];
+    if (habbit == null) {
+      return list;
+    }
+    final config = HabbitConfig.getConfig(habbit.config);
+    for (var element in config.statistics) {
+      list.add(
+        ListTile(
+          title: Text(element.name),
+          subtitle: Text(
+            element.transform(getEntries()),
+          ),
+        ),
+      );
+    }
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -129,36 +152,7 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
             },
           ),
         ),
-        ListTile(
-          title: const Text("Total entries"),
-          subtitle: Text(
-            (getEntries().length).toString(),
-          ),
-        ),
-        ListTile(
-          title: const Text("Current streak"),
-          subtitle: Text(
-            durationToStreak(currentStreak(getEntries())),
-          ),
-        ),
-        ListTile(
-          title: const Text("Shortest streak"),
-          subtitle: Text(
-            durationToStreak(shortestStreak(getEntries())),
-          ),
-        ),
-        ListTile(
-          title: const Text("Longest streak"),
-          subtitle: Text(
-            durationToStreak(longestStreak(getEntries())),
-          ),
-        ),
-        ListTile(
-          title: const Text("Average Duration"),
-          subtitle: Text(
-            durationToStreak(averageDuration(getEntries())),
-          ),
-        ),
+        ..._buildStats(),
         Container(
             padding: const EdgeInsets.all(8.0),
             height: 200,

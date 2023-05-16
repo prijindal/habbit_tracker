@@ -43,6 +43,7 @@ class HabbitPageState extends State<HabbitPage> {
         entries: _entries,
       ),
       StatisticsSubPage(
+        habbit: _habbit,
         entries: _entries,
       ),
       ListEntriesSubPage(
