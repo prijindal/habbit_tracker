@@ -5,7 +5,6 @@ import 'entryform.dart';
 import '../components/deleteentrydialog.dart';
 import '../helpers/stats.dart';
 import '../models/core.dart';
-import '../models/drift.dart';
 
 class ListEntriesSubPage extends StatefulWidget {
   const ListEntriesSubPage({
