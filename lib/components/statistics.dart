@@ -88,24 +88,6 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     }
   }
 
-  getChartData() {
-    final durationsData = allDurationsData(getEntries())
-      ..sort((a, b) =>
-          a.start.millisecondsSinceEpoch - b.start.millisecondsSinceEpoch);
-    return durationsData
-        .map(
-          (e) => BarChartGroupData(
-            x: e.end.millisecondsSinceEpoch,
-            barRods: [
-              BarChartRodData(
-                toY: e.duration.inSeconds.toDouble(),
-              )
-            ],
-          ),
-        )
-        .toList();
-  }
-
   List<Widget> _buildStats() {
     final habbit = widget.habbit;
     final list = <ListTile>[];
@@ -124,6 +106,138 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
       );
     }
     return list;
+  }
+
+  List<Widget> _buildCharts() {
+    final habbit = widget.habbit;
+    final list = <BarChartData>[];
+    if (habbit == null) {
+      return [];
+    }
+    final config = HabbitConfig.getConfig(habbit.config);
+    for (var element in config.charts) {
+      final titlesData = FlTitlesData(
+        show: true,
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        topTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        rightTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+      );
+      switch (element) {
+        case HabbitChart.durationsChart:
+          final durationsData = allDurationsData(getEntries())
+            ..sort((a, b) =>
+                a.start.millisecondsSinceEpoch -
+                b.start.millisecondsSinceEpoch);
+          final chartsData = durationsData
+              .map(
+                (e) => BarChartGroupData(
+                  x: e.end.millisecondsSinceEpoch,
+                  barRods: [
+                    BarChartRodData(
+                      toY: e.duration.inSeconds.toDouble(),
+                    )
+                  ],
+                ),
+              )
+              .toList();
+          list.add(
+            BarChartData(
+              titlesData: titlesData,
+              barTouchData: BarTouchData(
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    final end = DateTime.fromMillisecondsSinceEpoch(group.x);
+                    final duration = Duration(seconds: rod.toY.floor());
+                    return BarTooltipItem(
+                      "${formatDate(end, HabbitDateFormat.shortTime)}\n",
+                      const TextStyle(),
+                      children: [
+                        TextSpan(
+                          text: durationToStreak(duration),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              barGroups: chartsData,
+              // read about it in the BarChartData section
+            ),
+          );
+          break;
+        case HabbitChart.dayCountsChart:
+          final countsData = countPerDaysData(getEntries())
+            ..sort((a, b) =>
+                a.date.millisecondsSinceEpoch - b.date.millisecondsSinceEpoch);
+          final chartsData = countsData
+              .map(
+                (e) => BarChartGroupData(
+                  x: e.date.millisecondsSinceEpoch,
+                  barRods: [
+                    BarChartRodData(
+                      toY: e.count.toDouble(),
+                    )
+                  ],
+                ),
+              )
+              .toList();
+          list.add(
+            BarChartData(
+              titlesData: titlesData,
+              barTouchData: BarTouchData(
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    final date = DateTime.fromMillisecondsSinceEpoch(group.x);
+                    return BarTooltipItem(
+                      "${formatDate(date, HabbitDateFormat.shortDate)}\n",
+                      const TextStyle(),
+                      children: [
+                        TextSpan(
+                          text: "${rod.toY.floor()}",
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              barGroups: chartsData,
+              // read about it in the BarChartData section
+            ),
+          );
+          break;
+      }
+    }
+    return list
+        .map(
+          (barChartData) => Container(
+            padding: const EdgeInsets.all(8.0),
+            height: 200,
+            child: BarChart(
+              barChartData,
+              swapAnimationDuration:
+                  const Duration(milliseconds: 150), // Optional
+              swapAnimationCurve: Curves.linear,
+            ),
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -153,58 +267,7 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
           ),
         ),
         ..._buildStats(),
-        Container(
-            padding: const EdgeInsets.all(8.0),
-            height: 200,
-            child: BarChart(
-              BarChartData(
-                titlesData: FlTitlesData(
-                  show: true,
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: false,
-                    ),
-                  ),
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: false,
-                    ),
-                  ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: false,
-                    ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: false,
-                    ),
-                  ),
-                ),
-                barTouchData: BarTouchData(
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      final end = DateTime.fromMillisecondsSinceEpoch(group.x);
-                      final duration = Duration(seconds: rod.toY.floor());
-                      return BarTooltipItem(
-                        "${formatDate(end, true)}\n",
-                        const TextStyle(),
-                        children: [
-                          TextSpan(
-                            text: durationToStreak(duration),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                barGroups: getChartData(),
-                // read about it in the BarChartData section
-              ),
-              swapAnimationDuration:
-                  const Duration(milliseconds: 150), // Optional
-              swapAnimationCurve: Curves.linear, // Optional
-            )),
+        ..._buildCharts(),
       ],
     );
   }

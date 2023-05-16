@@ -15,6 +15,8 @@ class HabbitConfig {
 
   final List<HabbitStatistic> statistics;
 
+  final List<HabbitChart> charts;
+
   static final positive = HabbitConfig(
     name: "Positive Habbit",
     code: "positive_habbit",
@@ -29,6 +31,7 @@ class HabbitConfig {
     statistics: [
       HabbitStatistic.total,
     ],
+    charts: [HabbitChart.dayCountsChart],
   );
 
   static final negative = HabbitConfig(
@@ -52,6 +55,7 @@ class HabbitConfig {
       HabbitStatistic.longestStreak,
       HabbitStatistic.averageDuration,
     ],
+    charts: [HabbitChart.durationsChart],
   );
 
   static final values = [
@@ -68,6 +72,7 @@ class HabbitConfig {
     required this.counterTitle,
     required this.extraCounters,
     required this.statistics,
+    required this.charts,
   });
 
   static HabbitConfig getConfig(String? code) => HabbitConfig.values.firstWhere(
@@ -163,4 +168,9 @@ class HabbitStatistic {
       return "No Data";
     },
   );
+}
+
+enum HabbitChart {
+  durationsChart,
+  dayCountsChart,
 }

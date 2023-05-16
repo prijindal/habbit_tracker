@@ -12,6 +12,13 @@ class DurationData {
   final DateTime end;
 }
 
+class CountsDayData {
+  final DateTime date;
+  final int count;
+
+  CountsDayData({required this.date, required this.count});
+}
+
 String durationToStreak(Duration? streak) {
   if (streak == null) {
     return "No Data";
@@ -52,8 +59,11 @@ int getTodayCount(List<HabbitEntryData>? entries) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final todayEntries = entries.where((element) {
-    final aDate = DateTime(element.creationTime.year,
-        element.creationTime.month, element.creationTime.day);
+    final aDate = DateTime(
+      element.creationTime.year,
+      element.creationTime.month,
+      element.creationTime.day,
+    );
     return aDate == today;
   });
   return todayEntries.length;
@@ -71,6 +81,30 @@ Duration? longestStreak(
         .duration;
   }
   return null;
+}
+
+List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries) {
+  final counts = <DateTime, int>{};
+  if (entries == null) {
+    return [];
+  }
+  for (var entry in entries) {
+    final date = DateTime(
+      entry.creationTime.year,
+      entry.creationTime.month,
+      entry.creationTime.day,
+    );
+    if (!counts.containsKey(date)) {
+      counts[date] = 0;
+    }
+    counts.update(date, (value) => value + 1);
+  }
+  return counts.entries
+      .map((e) => CountsDayData(
+            count: e.value,
+            date: e.key,
+          ))
+      .toList();
 }
 
 List<DurationData> allDurationsData(
@@ -108,9 +142,16 @@ List<DurationData> allDurationsData(
         value.duration.inSeconds - element.duration.inSeconds);
 }
 
-String formatDate(DateTime date, [bool short = false]) {
-  if (short) {
-    return "${DateFormat.E().format(date)} ${DateFormat.jm().format(date)}";
+String formatDate(DateTime date,
+    [HabbitDateFormat format = HabbitDateFormat.long]) {
+  switch (format) {
+    case HabbitDateFormat.long:
+      return "${DateFormat.yMMMEd().format(date)} ${DateFormat.jm().format(date)}";
+    case HabbitDateFormat.shortTime:
+      return "${DateFormat.E().format(date)} ${DateFormat.jm().format(date)}";
+    case HabbitDateFormat.shortDate:
+      return "${DateFormat.MMMEd().format(date)}";
   }
-  return "${DateFormat.yMMMEd().format(date)} ${DateFormat.jm().format(date)}";
 }
+
+enum HabbitDateFormat { shortTime, shortDate, long }
