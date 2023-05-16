@@ -150,7 +150,7 @@ String formatDate(DateTime date,
     case HabbitDateFormat.shortTime:
       return "${DateFormat.E().format(date)} ${DateFormat.jm().format(date)}";
     case HabbitDateFormat.shortDate:
-      return "${DateFormat.MMMEd().format(date)}";
+      return DateFormat.MMMEd().format(date);
   }
 }
 
