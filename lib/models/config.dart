@@ -30,6 +30,7 @@ class HabbitConfig {
     extraCounters: [],
     statistics: [
       HabbitStatistic.total,
+      HabbitStatistic.averageCounts,
     ],
     charts: [HabbitChart.dayCountsChart],
   );
@@ -166,6 +167,18 @@ class HabbitStatistic {
         return stats.durationToStreak(duration);
       }
       return "No Data";
+    },
+  );
+
+  static final averageCounts = HabbitStatistic(
+    name: "Average counts",
+    transform: (entries) {
+      final counts = stats.countPerDaysData(entries);
+      var sum = 0;
+      for (var element in counts) {
+        sum += element.count;
+      }
+      return (sum / counts.length).toStringAsFixed(2);
     },
   );
 }

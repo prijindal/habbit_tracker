@@ -83,7 +83,16 @@ Duration? longestStreak(
   return null;
 }
 
-List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries) {
+List<DateTime> getDaysInBetween(DateTime startDate, DateTime endDate) {
+  List<DateTime> days = [];
+  for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+    days.add(startDate.add(Duration(days: i)));
+  }
+  return days;
+}
+
+List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries,
+    [bool includeEmptyDates = true]) {
   final counts = <DateTime, int>{};
   if (entries == null) {
     return [];
@@ -98,6 +107,22 @@ List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries) {
       counts[date] = 0;
     }
     counts.update(date, (value) => value + 1);
+  }
+  if (includeEmptyDates) {
+    final daysInBetween = getDaysInBetween(
+      entries.last.creationTime,
+      entries.first.creationTime,
+    );
+    for (var day in daysInBetween) {
+      final date = DateTime(
+        day.year,
+        day.month,
+        day.day,
+      );
+      if (!counts.containsKey(date)) {
+        counts[date] = 0;
+      }
+    }
   }
   return counts.entries
       .map((e) => CountsDayData(
