@@ -35,62 +35,65 @@ class _HabbitDialogFormState extends State<HabbitDialogForm> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Enter name and description'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            onChanged: (value) {},
-            controller: _nameFieldController,
-            decoration: const InputDecoration(hintText: "Name"),
-          ),
-          TextField(
-            onChanged: (value) {},
-            controller: _descriptionFieldController,
-            decoration: const InputDecoration(hintText: "Description"),
-          ),
-          DropdownButton<HabbitConfig>(
-            isExpanded: true,
-            value: _habbitConfig,
-            items: HabbitConfig.values
-                .map(
-                  (e) => DropdownMenuItem<HabbitConfig>(
-                    value: e,
-                    child: Text(e.name),
-                  ),
-                )
-                .toList(),
-            onChanged: (newValue) {
-              setState(() {
-                if (newValue != null) {
-                  _habbitConfig = newValue;
-                }
-              });
+    return Theme(
+      data: _habbitConfig.getThemeData(context),
+      child: AlertDialog(
+        title: const Text('Enter name and description'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              onChanged: (value) {},
+              controller: _nameFieldController,
+              decoration: const InputDecoration(hintText: "Name"),
+            ),
+            TextField(
+              onChanged: (value) {},
+              controller: _descriptionFieldController,
+              decoration: const InputDecoration(hintText: "Description"),
+            ),
+            DropdownButton<HabbitConfig>(
+              isExpanded: true,
+              value: _habbitConfig,
+              items: HabbitConfig.values
+                  .map(
+                    (e) => DropdownMenuItem<HabbitConfig>(
+                      value: e,
+                      child: Text(e.name),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (newValue) {
+                setState(() {
+                  if (newValue != null) {
+                    _habbitConfig = newValue;
+                  }
+                });
+              },
+            )
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
             },
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop<HabbitCompanion>(
+                HabbitCompanion(
+                  name: drift.Value(_nameFieldController.text),
+                  description: drift.Value(_descriptionFieldController.text),
+                  config: drift.Value(_habbitConfig.code),
+                ),
+              );
+            },
+            child: const Text("Save"),
           )
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text("Cancel"),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop<HabbitCompanion>(
-              HabbitCompanion(
-                name: drift.Value(_nameFieldController.text),
-                description: drift.Value(_descriptionFieldController.text),
-                config: drift.Value(_habbitConfig.code),
-              ),
-            );
-          },
-          child: const Text("Submit"),
-        )
-      ],
     );
   }
 }

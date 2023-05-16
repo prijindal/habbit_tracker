@@ -124,18 +124,11 @@ class HabbitPageState extends State<HabbitPage> {
     }
   }
 
-  ThemeData _getThemeData() {
-    final theme = Theme.of(context);
+  ThemeData? _getThemeData() {
     if (_habbit == null) {
-      return theme;
+      return null;
     }
-    final colorScheme = HabbitConfig.getConfig(_habbit!.config).colorScheme;
-    return theme.copyWith(
-      colorScheme: theme.colorScheme.copyWith(
-        primary: colorScheme.primary,
-        primaryContainer: colorScheme.primaryContainer,
-      ),
-    );
+    return HabbitConfig.getConfig(_habbit!.config).getThemeData(context);
   }
 
   Widget _buildPage() {
@@ -203,7 +196,7 @@ class HabbitPageState extends State<HabbitPage> {
 
   @override
   Widget build(BuildContext context) => Theme(
-        data: _getThemeData(),
+        data: _getThemeData() ?? Theme.of(context),
         child: _buildPage(),
       );
 }
