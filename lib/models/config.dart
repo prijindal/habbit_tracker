@@ -130,8 +130,13 @@ class HabbitStatistic {
 
   static final shortestStreak = HabbitStatistic(
     name: "Shortest streak",
-    transform: (entries) =>
-        stats.durationToStreak(stats.shortestStreak(entries)),
+    transform: (entries) {
+      if (entries.isNotEmpty && stats.allDurationsData(entries).isNotEmpty) {
+        final shortest = stats.allDurationsData(entries).first.duration;
+        return stats.durationToStreak(shortest);
+      }
+      return "No Data";
+    },
   );
 
   static final longestStreak = HabbitStatistic(
@@ -142,7 +147,20 @@ class HabbitStatistic {
 
   static final averageDuration = HabbitStatistic(
     name: "Average Duration",
-    transform: (entries) =>
-        stats.durationToStreak(stats.averageDuration(entries)),
+    transform: (entries) {
+      final List<stats.DurationData> durations =
+          stats.allDurationsData(entries);
+      Duration totalDuration = const Duration();
+      for (var durationData in durations) {
+        totalDuration += durationData.duration;
+      }
+      if (durations.isNotEmpty) {
+        final duration = Duration(
+          seconds: (totalDuration.inSeconds / durations.length).round(),
+        );
+        return stats.durationToStreak(duration);
+      }
+      return "No Data";
+    },
   );
 }

@@ -73,15 +73,6 @@ Duration? longestStreak(
   return null;
 }
 
-Duration? shortestStreak(List<HabbitEntryData>? entries) {
-  if (entries != null &&
-      entries.isNotEmpty &&
-      allDurationsData(entries).isNotEmpty) {
-    return allDurationsData(entries).first.duration;
-  }
-  return null;
-}
-
 List<DurationData> allDurationsData(
   List<HabbitEntryData>? entries, {
   bool includeCurrent = false,
@@ -115,19 +106,6 @@ List<DurationData> allDurationsData(
   return allDurations
     ..sort((value, element) =>
         value.duration.inSeconds - element.duration.inSeconds);
-}
-
-Duration averageDuration(List<HabbitEntryData>? entries) {
-  final List<DurationData> durations = allDurationsData(entries);
-  Duration totalDuration = const Duration();
-  for (var durationData in durations) {
-    totalDuration += durationData.duration;
-  }
-  if (durations.isNotEmpty) {
-    return Duration(
-        seconds: (totalDuration.inSeconds / durations.length).round());
-  }
-  return const Duration();
 }
 
 String formatDate(DateTime date, [bool short = false]) {
