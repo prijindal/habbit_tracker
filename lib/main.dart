@@ -7,6 +7,9 @@ import './models/theme.dart';
 import './pages/home.dart';
 
 void main() async {
+  runApp(
+    const MyApp(),
+  );
   try {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp(
@@ -15,9 +18,6 @@ void main() async {
   } catch (e, stack) {
     AppLogger.instance.e("Firebase cannot be initialized", e, stack);
   }
-  return runApp(
-    const MyApp(),
-  );
 }
 
 class MyApp extends StatelessWidget {

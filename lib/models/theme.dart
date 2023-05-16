@@ -21,7 +21,7 @@ class ThemeModeNotifier with ChangeNotifier {
     });
   }
 
-  getTheme() => _themeMode;
+  ThemeMode getTheme() => _themeMode;
 
   setTheme(ThemeMode themeMode) async {
     _themeMode = themeMode;

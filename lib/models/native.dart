@@ -11,7 +11,7 @@ import "./core.dart";
 SharedDatabase constructDb() {
   final db = LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
-    final path = p.join(dbFolder.path, 'db.sqlite');
+    final path = p.join(dbFolder.path, 'habbit_tracker.sqlite');
     AppLogger.instance.d("Db Path: $path");
     final file = File(path);
     return NativeDatabase(file);

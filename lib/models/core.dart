@@ -14,6 +14,7 @@ class Habbit extends Table {
   TextColumn get id => text().unique().clientDefault(() => _uuid.v4())();
   TextColumn get name => text()();
   TextColumn get description => text().nullable()();
+  TextColumn get config => text().nullable()();
   DateTimeColumn get creationTime =>
       dateTime().withDefault(currentDateAndTime)();
 }

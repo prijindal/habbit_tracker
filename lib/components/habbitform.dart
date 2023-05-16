@@ -1,12 +1,19 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:habbit_tracker/models/config.dart';
 import '../models/core.dart';
 
 class HabbitDialogForm extends StatefulWidget {
-  const HabbitDialogForm({super.key, this.name, this.description});
+  const HabbitDialogForm({
+    super.key,
+    this.name,
+    this.description,
+    this.config,
+  });
 
   final String? name;
   final String? description;
+  final String? config;
 
   @override
   State<HabbitDialogForm> createState() => _HabbitDialogFormState();
@@ -16,11 +23,13 @@ class _HabbitDialogFormState extends State<HabbitDialogForm> {
   final TextEditingController _nameFieldController = TextEditingController();
   final TextEditingController _descriptionFieldController =
       TextEditingController();
+  HabbitConfig _habbitConfig = HabbitConfig.positive;
 
   @override
   void initState() {
     _nameFieldController.text = widget.name ?? "";
     _descriptionFieldController.text = widget.description ?? "";
+    _habbitConfig = HabbitConfig.getConfig(widget.config);
     super.initState();
   }
 
@@ -41,6 +50,25 @@ class _HabbitDialogFormState extends State<HabbitDialogForm> {
             controller: _descriptionFieldController,
             decoration: const InputDecoration(hintText: "Description"),
           ),
+          DropdownButton<HabbitConfig>(
+            isExpanded: true,
+            value: _habbitConfig,
+            items: HabbitConfig.values
+                .map(
+                  (e) => DropdownMenuItem<HabbitConfig>(
+                    value: e,
+                    child: Text(e.name),
+                  ),
+                )
+                .toList(),
+            onChanged: (newValue) {
+              setState(() {
+                if (newValue != null) {
+                  _habbitConfig = newValue;
+                }
+              });
+            },
+          )
         ],
       ),
       actions: [
@@ -56,6 +84,7 @@ class _HabbitDialogFormState extends State<HabbitDialogForm> {
               HabbitCompanion(
                 name: drift.Value(_nameFieldController.text),
                 description: drift.Value(_descriptionFieldController.text),
+                config: drift.Value(_habbitConfig.code),
               ),
             );
           },

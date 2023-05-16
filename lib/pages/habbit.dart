@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:habbit_tracker/components/habbitform.dart';
+import 'package:habbit_tracker/models/config.dart';
 import '../components/entryform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
@@ -112,6 +113,7 @@ class HabbitPageState extends State<HabbitPage> {
         return HabbitDialogForm(
           name: _habbit!.name,
           description: _habbit!.description,
+          config: _habbit!.config,
         );
       },
     );
@@ -122,32 +124,24 @@ class HabbitPageState extends State<HabbitPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  ThemeData _getThemeData() {
+    final theme = Theme.of(context);
+    if (_habbit == null) {
+      return theme;
+    }
+    final colorScheme = HabbitConfig.getConfig(_habbit!.config).colorScheme;
+    return theme.copyWith(
+      colorScheme: theme.colorScheme.copyWith(
+        primary: colorScheme.primary,
+        primaryContainer: colorScheme.primaryContainer,
+      ),
+    );
+  }
+
+  Widget _buildPage() {
     return Scaffold(
       appBar: AppBar(
         title: _habbit == null ? null : Text(_habbit!.name),
-        // : RichText(
-        //     textAlign: TextAlign.start,
-        //     text: TextSpan(
-        //       text: _habbit!.name,
-        //       style: const TextStyle(
-        //         fontSize: 20,
-        //         fontWeight: FontWeight.w500,
-        //       ),
-        //       children: <TextSpan>[
-        //         if (_habbit!.description != null &&
-        //             _habbit!.description!.isNotEmpty)
-        //           TextSpan(
-        //             text: '\n${_habbit!.description}',
-        //             style: const TextStyle(
-        //               fontSize: 16,
-        //               fontWeight: FontWeight.normal,
-        //             ),
-        //           ),
-        //       ],
-        //     ),
-        //   ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
@@ -206,4 +200,10 @@ class HabbitPageState extends State<HabbitPage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  @override
+  Widget build(BuildContext context) => Theme(
+        data: _getThemeData(),
+        child: _buildPage(),
+      );
 }
