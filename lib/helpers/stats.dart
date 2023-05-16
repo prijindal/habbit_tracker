@@ -108,7 +108,7 @@ List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries,
     }
     counts.update(date, (value) => value + 1);
   }
-  if (includeEmptyDates) {
+  if (includeEmptyDates && entries.isNotEmpty) {
     final daysInBetween = getDaysInBetween(
       entries.last.creationTime,
       entries.first.creationTime,
