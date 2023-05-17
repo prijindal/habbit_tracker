@@ -41,6 +41,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ..orderBy(
             [
               (t) => OrderingTerm(
+                    expression: t.order,
+                    mode: OrderingMode.asc,
+                  ),
+              (t) => OrderingTerm(
                     expression: t.creationTime,
                     mode: OrderingMode.desc,
                   ),
@@ -116,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildHabbitsList(bool container) {
     return AnimationLimiter(
-      child: ListView.builder(
+      child: ReorderableListView.builder(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
         itemCount: _habbits != null ? _habbits!.length : 1,
         itemBuilder: (BuildContext context, int index) {
@@ -125,6 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           final habbit = _habbits![index];
           return AnimationConfiguration.staggeredList(
+            key: Key("AnimationConfiguration ${habbit.id}"),
             position: index,
             duration: const Duration(milliseconds: 375),
             child: SlideAnimation(
@@ -148,6 +153,30 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           );
+        },
+        onReorder: (oldindex, newindex) {
+          if (_habbits == null) {
+            return;
+          }
+          if (newindex > oldindex) {
+            newindex -= 1;
+          }
+          final items = _habbits!.removeAt(oldindex);
+          _habbits!.insert(newindex, items);
+          MyDatabase.instance.transaction(() async {
+            for (var i = 0; i < _habbits!.length; i++) {
+              var habbit = _habbits![i];
+              await (MyDatabase.instance.update(MyDatabase.instance.habbit)
+                    ..where(
+                      (tbl) => tbl.id.equals(habbit.id),
+                    ))
+                  .write(
+                HabbitCompanion(
+                  order: Value(i),
+                ),
+              );
+            }
+          });
         },
       ),
     );

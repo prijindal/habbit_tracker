@@ -15,6 +15,7 @@ class Habbit extends Table {
   TextColumn get name => text()();
   TextColumn get description => text().nullable()();
   TextColumn get config => text().nullable()();
+  IntColumn get order => integer().nullable()();
   DateTimeColumn get creationTime =>
       dateTime().withDefault(currentDateAndTime)();
 }
