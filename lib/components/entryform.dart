@@ -19,7 +19,7 @@ class EntryDialogForm extends StatefulWidget {
   @override
   State<EntryDialogForm> createState() => _EntryDialogFormState();
 
-  static editEntry({
+  static Future<void> editEntry({
     required BuildContext context,
     required String habbitId,
     required HabbitEntryData entry,

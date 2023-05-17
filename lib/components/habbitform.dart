@@ -19,7 +19,7 @@ class HabbitDialogForm extends StatefulWidget {
   @override
   State<HabbitDialogForm> createState() => _HabbitDialogFormState();
 
-  static editEntry({
+  static Future<void> editEntry({
     required BuildContext context,
     required String habbitId,
     required HabbitData? habbit,

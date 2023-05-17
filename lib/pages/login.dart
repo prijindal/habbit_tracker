@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  _signUpUser() async {
+  Future<void> _signUpUser() async {
     try {
       final creds = await _getCreds("signup");
       if (context.mounted) {
@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  _authUser() async {
+  Future<void> _authUser() async {
     try {
       setState(() {
         _isLoading = true;

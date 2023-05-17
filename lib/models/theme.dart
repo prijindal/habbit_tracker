@@ -34,7 +34,7 @@ class ThemeModeNotifier with ChangeNotifier {
     init();
   }
 
-  init() {
+  void init() {
     AppLogger.instance.d("Reading $appThemeMode from shared_preferences");
     SharedPreferences.getInstance().then((instance) {
       final preference = instance.getInt(appThemeMode);
@@ -47,7 +47,7 @@ class ThemeModeNotifier with ChangeNotifier {
 
   ThemeMode getTheme() => _themeMode;
 
-  setTheme(ThemeMode themeMode) async {
+  Future<void> setTheme(ThemeMode themeMode) async {
     _themeMode = themeMode;
     (await SharedPreferences.getInstance()).setInt(
       appThemeMode,
