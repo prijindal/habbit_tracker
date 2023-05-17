@@ -14,9 +14,16 @@ import '../pages/habbit.dart';
 import '../models/core.dart';
 
 class HabbitTile extends StatefulWidget {
-  const HabbitTile({super.key, required this.habbit});
+  const HabbitTile({
+    super.key,
+    required this.habbit,
+    this.onTap,
+    this.selected = false,
+  });
 
   final HabbitData habbit;
+  final GestureTapCallback? onTap;
+  final bool selected;
 
   @override
   State<HabbitTile> createState() => _HabbitTileState();
@@ -218,17 +225,31 @@ class _HabbitTileState extends State<HabbitTile> {
       },
       background: deleteDismissible,
       secondaryBackground: editDismissible,
-      child: OpenContainer(
-        openColor: Theme.of(context).colorScheme.background,
-        closedColor: Theme.of(context).colorScheme.background,
-        openBuilder: (context, action) =>
-            HabbitPage(habbitId: widget.habbit.id),
-        closedBuilder: (BuildContext _, VoidCallback openContainer) => ListTile(
-          title: Text(widget.habbit.name),
-          subtitle: _buildSubtitle(),
-          onTap: openContainer,
-          trailing: _buildTrailing(),
-        ),
+      child: ListTile(
+        selected: widget.selected,
+        title: Text(widget.habbit.name),
+        subtitle: _buildSubtitle(),
+        onTap: widget.onTap,
+        trailing: _buildTrailing(),
+      ),
+    );
+  }
+}
+
+class HabbitContainerTile extends StatelessWidget {
+  const HabbitContainerTile({super.key, required this.habbit});
+
+  final HabbitData habbit;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenContainer(
+      openColor: Theme.of(context).colorScheme.background,
+      closedColor: Theme.of(context).colorScheme.background,
+      openBuilder: (context, action) => HabbitPage(habbitId: habbit.id),
+      closedBuilder: (BuildContext _, VoidCallback openContainer) => HabbitTile(
+        habbit: habbit,
+        onTap: openContainer,
       ),
     );
   }

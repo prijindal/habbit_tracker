@@ -13,9 +13,10 @@ import '../components/statistics.dart';
 import '../components/listentries.dart';
 
 class HabbitPage extends StatefulWidget {
-  const HabbitPage({super.key, required this.habbitId});
+  const HabbitPage({super.key, required this.habbitId, this.primary = true});
 
   final String habbitId;
+  final bool primary;
 
   @override
   State<HabbitPage> createState() => HabbitPageState();
@@ -117,23 +118,26 @@ class HabbitPageState extends State<HabbitPage> {
 
   Widget _buildPage() {
     return Scaffold(
-      appBar: AppBar(
-        title: _habbit == null ? null : Text(_habbit!.name),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: GestureDetector(
-              onTap: () {
-                _editHabbit();
-              },
-              child: const Icon(
-                Icons.edit,
-                size: 26.0,
-              ),
-            ),
-          ),
-        ],
-      ),
+      primary: widget.primary,
+      appBar: widget.primary == true
+          ? AppBar(
+              title: _habbit == null ? null : Text(_habbit!.name),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      _editHabbit();
+                    },
+                    child: const Icon(
+                      Icons.edit,
+                      size: 26.0,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : null,
       body: PageTransitionSwitcher(
         transitionBuilder: (
           Widget child,
@@ -149,6 +153,7 @@ class HabbitPageState extends State<HabbitPage> {
         child: _getWidget(),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        useLegacyColorScheme: false,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -170,11 +175,13 @@ class HabbitPageState extends State<HabbitPage> {
           });
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _recordEntry,
-        tooltip: 'Entry',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: widget.primary == true
+          ? FloatingActionButton(
+              onPressed: _recordEntry,
+              tooltip: 'Entry',
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 
