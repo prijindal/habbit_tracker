@@ -10,7 +10,7 @@ import '../components/habbitform.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
 
-const MEDIA_BREAKPOINT = 700;
+const mediaBreakpoint = 700;
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildFab() {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        if (constraints.maxWidth > MEDIA_BREAKPOINT) {
+        if (constraints.maxWidth > mediaBreakpoint) {
           return FloatingActionButton.extended(
             onPressed: _recordHabbit,
             tooltip: 'Habbit',
@@ -157,12 +157,12 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: _buildAppBar(),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          if (constraints.maxWidth > MEDIA_BREAKPOINT) {
+          if (constraints.maxWidth > mediaBreakpoint) {
             return Flex(
               direction: Axis.horizontal,
               children: [
                 SizedBox(
-                  width: MEDIA_BREAKPOINT / 2,
+                  width: mediaBreakpoint / 2,
                   child: _buildHabbitsList(false),
                 ),
                 if (_habbits != null && selectedHabbitIndex < _habbits!.length)
@@ -183,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButtonLocation:
-          MediaQuery.of(context).size.width > MEDIA_BREAKPOINT
+          MediaQuery.of(context).size.width > mediaBreakpoint
               ? FloatingActionButtonLocation.startFloat
               : FloatingActionButtonLocation.endFloat,
       floatingActionButton: _buildFab(),
