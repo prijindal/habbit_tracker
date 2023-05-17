@@ -29,22 +29,20 @@ Future<String> _extractDbJson() async {
 
 Future<void> _jsonToDb(String jsonEncoded, BuildContext context) async {
   final decoded = jsonDecode(jsonEncoded);
-  List<Map<String, dynamic>> entries =
-      decoded["entries"] as List<Map<String, dynamic>>;
-  List<Map<String, dynamic>> habbits =
-      decoded["habbits"] as List<Map<String, dynamic>>;
+  List<dynamic> entries = decoded["entries"] as List<dynamic>;
+  List<dynamic> habbits = decoded["habbits"] as List<dynamic>;
   try {
     await MyDatabase.instance.batch((batch) {
       batch.insertAll(
         MyDatabase.instance.habbit,
         habbits.map(
-          (e) => HabbitData.fromJson(e),
+          (e) => HabbitData.fromJson(e as Map<String, dynamic>),
         ),
       );
       batch.insertAll(
         MyDatabase.instance.habbitEntry,
         entries.map(
-          (a) => HabbitEntryData.fromJson(a),
+          (a) => HabbitEntryData.fromJson(a as Map<String, dynamic>),
         ),
       );
     });

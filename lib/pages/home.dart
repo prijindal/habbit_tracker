@@ -189,6 +189,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           if (constraints.maxWidth > mediaBreakpoint) {
+            if (_habbits != null || _habbits!.isEmpty) {
+              return _buildHabbitsList(false);
+            }
             return Flex(
               direction: Axis.horizontal,
               children: [
