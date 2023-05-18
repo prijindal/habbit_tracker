@@ -125,7 +125,12 @@ class _MyHomePageState extends State<MyHomePage> {
         itemCount: _habbits != null ? _habbits!.length : 1,
         itemBuilder: (BuildContext context, int index) {
           if (_habbits == null) {
-            return const Text("Loading...");
+            return const Center(
+              key: Key("HabbitsListLoading"),
+              child: Text(
+                "Loading...",
+              ),
+            );
           }
           final habbit = _habbits![index];
           return AnimationConfiguration.staggeredList(
@@ -189,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           if (constraints.maxWidth > mediaBreakpoint) {
-            if (_habbits != null || _habbits!.isEmpty) {
+            if (_habbits == null || _habbits!.isEmpty) {
               return _buildHabbitsList(false);
             }
             return Flex(
