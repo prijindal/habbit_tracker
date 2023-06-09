@@ -10,16 +10,6 @@ part 'core.g.dart';
 
 const _uuid = Uuid();
 
-class Task extends Table {
-  TextColumn get id => text().unique().clientDefault(() => _uuid.v4())();
-  TextColumn get name => text()();
-  TextColumn get description => text().nullable()();
-  IntColumn get order => integer().nullable()();
-  DateTimeColumn get creationTime =>
-      dateTime().withDefault(currentDateAndTime)();
-  DateTimeColumn get completionTime => dateTime().nullable()();
-}
-
 class Habbit extends Table {
   TextColumn get id => text().unique().clientDefault(() => _uuid.v4())();
   TextColumn get name => text()();
@@ -40,11 +30,7 @@ class HabbitEntry extends Table {
 
 // this annotation tells drift to prepare a database class that uses both of the
 // tables we just defined. We'll see how to use that database class in a moment.
-@DriftDatabase(tables: [
-  Task,
-  Habbit,
-  HabbitEntry,
-])
+@DriftDatabase(tables: [HabbitEntry])
 class SharedDatabase extends _$SharedDatabase {
   SharedDatabase(QueryExecutor e) : super(e);
 

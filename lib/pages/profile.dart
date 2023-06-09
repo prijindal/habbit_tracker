@@ -163,7 +163,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      primary: false,
+      appBar: AppBar(),
       body: ListView(
         children: [
           ListTile(
