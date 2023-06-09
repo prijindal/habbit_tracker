@@ -3,6 +3,346 @@
 part of 'core.dart';
 
 // ignore_for_file: type=lint
+class $TaskTable extends Task with TableInfo<$TaskTable, TaskData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+      clientDefault: () => _uuid.v4());
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _orderMeta = const VerificationMeta('order');
+  @override
+  late final GeneratedColumn<int> order = GeneratedColumn<int>(
+      'order', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _creationTimeMeta =
+      const VerificationMeta('creationTime');
+  @override
+  late final GeneratedColumn<DateTime> creationTime = GeneratedColumn<DateTime>(
+      'creation_time', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _completionTimeMeta =
+      const VerificationMeta('completionTime');
+  @override
+  late final GeneratedColumn<DateTime> completionTime =
+      GeneratedColumn<DateTime>('completion_time', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, description, order, creationTime, completionTime];
+  @override
+  String get aliasedName => _alias ?? 'task';
+  @override
+  String get actualTableName => 'task';
+  @override
+  VerificationContext validateIntegrity(Insertable<TaskData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('order')) {
+      context.handle(
+          _orderMeta, order.isAcceptableOrUnknown(data['order']!, _orderMeta));
+    }
+    if (data.containsKey('creation_time')) {
+      context.handle(
+          _creationTimeMeta,
+          creationTime.isAcceptableOrUnknown(
+              data['creation_time']!, _creationTimeMeta));
+    }
+    if (data.containsKey('completion_time')) {
+      context.handle(
+          _completionTimeMeta,
+          completionTime.isAcceptableOrUnknown(
+              data['completion_time']!, _completionTimeMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  TaskData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      order: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}order']),
+      creationTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}creation_time'])!,
+      completionTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}completion_time']),
+    );
+  }
+
+  @override
+  $TaskTable createAlias(String alias) {
+    return $TaskTable(attachedDatabase, alias);
+  }
+}
+
+class TaskData extends DataClass implements Insertable<TaskData> {
+  final String id;
+  final String name;
+  final String? description;
+  final int? order;
+  final DateTime creationTime;
+  final DateTime? completionTime;
+  const TaskData(
+      {required this.id,
+      required this.name,
+      this.description,
+      this.order,
+      required this.creationTime,
+      this.completionTime});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || order != null) {
+      map['order'] = Variable<int>(order);
+    }
+    map['creation_time'] = Variable<DateTime>(creationTime);
+    if (!nullToAbsent || completionTime != null) {
+      map['completion_time'] = Variable<DateTime>(completionTime);
+    }
+    return map;
+  }
+
+  TaskCompanion toCompanion(bool nullToAbsent) {
+    return TaskCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      order:
+          order == null && nullToAbsent ? const Value.absent() : Value(order),
+      creationTime: Value(creationTime),
+      completionTime: completionTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completionTime),
+    );
+  }
+
+  factory TaskData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskData(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      order: serializer.fromJson<int?>(json['order']),
+      creationTime: serializer.fromJson<DateTime>(json['creationTime']),
+      completionTime: serializer.fromJson<DateTime?>(json['completionTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String?>(description),
+      'order': serializer.toJson<int?>(order),
+      'creationTime': serializer.toJson<DateTime>(creationTime),
+      'completionTime': serializer.toJson<DateTime?>(completionTime),
+    };
+  }
+
+  TaskData copyWith(
+          {String? id,
+          String? name,
+          Value<String?> description = const Value.absent(),
+          Value<int?> order = const Value.absent(),
+          DateTime? creationTime,
+          Value<DateTime?> completionTime = const Value.absent()}) =>
+      TaskData(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description.present ? description.value : this.description,
+        order: order.present ? order.value : this.order,
+        creationTime: creationTime ?? this.creationTime,
+        completionTime:
+            completionTime.present ? completionTime.value : this.completionTime,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('TaskData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('order: $order, ')
+          ..write('creationTime: $creationTime, ')
+          ..write('completionTime: $completionTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, description, order, creationTime, completionTime);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.order == this.order &&
+          other.creationTime == this.creationTime &&
+          other.completionTime == this.completionTime);
+}
+
+class TaskCompanion extends UpdateCompanion<TaskData> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String?> description;
+  final Value<int?> order;
+  final Value<DateTime> creationTime;
+  final Value<DateTime?> completionTime;
+  final Value<int> rowid;
+  const TaskCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.order = const Value.absent(),
+    this.creationTime = const Value.absent(),
+    this.completionTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaskCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.description = const Value.absent(),
+    this.order = const Value.absent(),
+    this.creationTime = const Value.absent(),
+    this.completionTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<TaskData> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<int>? order,
+    Expression<DateTime>? creationTime,
+    Expression<DateTime>? completionTime,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (order != null) 'order': order,
+      if (creationTime != null) 'creation_time': creationTime,
+      if (completionTime != null) 'completion_time': completionTime,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaskCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<String?>? description,
+      Value<int?>? order,
+      Value<DateTime>? creationTime,
+      Value<DateTime?>? completionTime,
+      Value<int>? rowid}) {
+    return TaskCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      order: order ?? this.order,
+      creationTime: creationTime ?? this.creationTime,
+      completionTime: completionTime ?? this.completionTime,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (order.present) {
+      map['order'] = Variable<int>(order.value);
+    }
+    if (creationTime.present) {
+      map['creation_time'] = Variable<DateTime>(creationTime.value);
+    }
+    if (completionTime.present) {
+      map['completion_time'] = Variable<DateTime>(completionTime.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('order: $order, ')
+          ..write('creationTime: $creationTime, ')
+          ..write('completionTime: $completionTime, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $HabbitTable extends Habbit with TableInfo<$HabbitTable, HabbitData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -607,11 +947,13 @@ class HabbitEntryCompanion extends UpdateCompanion<HabbitEntryData> {
 
 abstract class _$SharedDatabase extends GeneratedDatabase {
   _$SharedDatabase(QueryExecutor e) : super(e);
+  late final $TaskTable task = $TaskTable(this);
   late final $HabbitTable habbit = $HabbitTable(this);
   late final $HabbitEntryTable habbitEntry = $HabbitEntryTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [habbit, habbitEntry];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [task, habbit, habbitEntry];
 }

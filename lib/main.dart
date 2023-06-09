@@ -1,10 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:habbit_tracker/pages/home.dart';
 import 'package:provider/provider.dart';
 import './firebase_options.dart';
 import './helpers/logger.dart';
 import './models/theme.dart';
-import './pages/home.dart';
 
 void main() async {
   runApp(
@@ -43,7 +43,7 @@ class MyMaterialApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: themeNotifier.getTheme(),
-      home: const MyHomePage(),
+      home: const HomePage(),
     );
   }
 }
