@@ -280,7 +280,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             );
           } else {
-            return _buildHabbitsList(true);
+            return RefreshIndicator(
+              onRefresh: syncDb,
+              child: _buildHabbitsList(true),
+            );
           }
         },
       ),
