@@ -5,10 +5,10 @@ import 'package:drift/drift.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:habbit_tracker/helpers/logger.dart';
 
 import '../models/core.dart';
 import '../models/drift.dart';
+import 'logger.dart';
 
 Future<String> extractDbJson() async {
   final entries =

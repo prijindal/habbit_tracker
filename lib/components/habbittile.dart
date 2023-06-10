@@ -1,17 +1,18 @@
 import 'dart:async';
 
-import 'package:drift/drift.dart';
 import 'package:animations/animations.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:habbit_tracker/components/habbitform.dart';
-import 'package:habbit_tracker/models/config.dart';
-import 'package:habbit_tracker/models/theme.dart';
-import '../components/entryform.dart';
-import '../helpers/stats.dart';
-import '../models/drift.dart';
+
 import '../components/deletehabbitdialog.dart';
-import '../pages/habbit.dart';
+import '../components/entryform.dart';
+import '../components/habbitform.dart';
+import '../helpers/stats.dart';
+import '../models/config.dart';
 import '../models/core.dart';
+import '../models/drift.dart';
+import '../models/theme.dart';
+import '../pages/habbit.dart';
 
 class HabbitTile extends StatefulWidget {
   const HabbitTile({
@@ -48,6 +49,7 @@ class _HabbitTileState extends State<HabbitTile> {
   void _addWatcher() {
     _subscription = (MyDatabase.instance.habbitEntry.select()
           ..where((tbl) => tbl.habbit.equals(widget.habbit.id))
+          ..where((tbl) => tbl.deletionTime.isNull())
           ..orderBy(
             [
               (t) => OrderingTerm(
@@ -111,7 +113,8 @@ class _HabbitTileState extends State<HabbitTile> {
               final savedEntry = await (MyDatabase.instance.habbitEntry.select()
                     ..where(
                       (tbl) => tbl.rowId.equals(savedEntryId),
-                    ))
+                    )
+                    ..where((tbl) => tbl.deletionTime.isNull()))
                   .getSingle();
               _editEntry(savedEntry);
             },
@@ -134,6 +137,7 @@ class _HabbitTileState extends State<HabbitTile> {
   void _removeEntry() async {
     final lastEntry = await (MyDatabase.instance.habbitEntry.select()
           ..where((tbl) => tbl.habbit.equals(widget.habbit.id))
+          ..where((tbl) => tbl.deletionTime.isNull())
           ..limit(1)
           ..orderBy(
             [

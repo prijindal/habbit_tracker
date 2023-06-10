@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:habbit_tracker/helpers/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../helpers/constants.dart';
+import '../helpers/logger.dart';
 
 final deleteDismissible = Container(
   color: Colors.red,

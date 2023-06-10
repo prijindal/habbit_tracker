@@ -1,8 +1,9 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:habbit_tracker/models/config.dart';
-import 'package:habbit_tracker/models/drift.dart';
+
+import '../models/config.dart';
 import '../models/core.dart';
+import '../models/drift.dart';
 
 class HabbitDialogForm extends StatefulWidget {
   const HabbitDialogForm({

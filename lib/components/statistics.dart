@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:habbit_tracker/models/config.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../helpers/stats.dart';
-import '../models/core.dart';
+
 import '../helpers/constants.dart';
+import '../helpers/stats.dart';
+import '../models/config.dart';
+import '../models/core.dart';
 
 enum StatsIntervals { oneWeek, oneMonth, threeMonths, oneYear, all }
 

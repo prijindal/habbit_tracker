@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:habbit_tracker/models/theme.dart';
-import 'entryform.dart';
+
 import '../components/deleteentrydialog.dart';
 import '../helpers/stats.dart';
 import '../models/core.dart';
+import '../models/theme.dart';
+import 'entryform.dart';
 
 class ListEntriesSubPage extends StatefulWidget {
   const ListEntriesSubPage({

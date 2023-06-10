@@ -1,4 +1,6 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+
 import '../models/core.dart';
 import '../models/drift.dart';
 
@@ -24,12 +26,24 @@ class DeleteHabbitDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            (MyDatabase.instance.delete(MyDatabase.instance.habbitEntry)
+            (MyDatabase.instance.update(MyDatabase.instance.habbitEntry)
                   ..where((tbl) => tbl.habbit.equals(habbit.id)))
-                .go();
-            (MyDatabase.instance.delete(MyDatabase.instance.habbit)
+                .write(
+              HabbitEntryCompanion(
+                deletionTime: Value(
+                  DateTime.now(),
+                ),
+              ),
+            );
+            (MyDatabase.instance.update(MyDatabase.instance.habbit)
                   ..where((tbl) => tbl.id.equals(habbit.id)))
-                .go();
+                .write(
+              HabbitCompanion(
+                deletionTime: Value(
+                  DateTime.now(),
+                ),
+              ),
+            );
             Navigator.of(context).pop<bool>(true);
           },
           child: const Text("Yes"),

@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:habbit_tracker/models/config.dart';
+
 import '../helpers/stats.dart';
+import '../models/config.dart';
 import '../models/core.dart';
 
 class CounterSubPage extends StatefulWidget {

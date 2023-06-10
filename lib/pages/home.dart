@@ -93,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _addWatcher() {
     _subscription = (MyDatabase.instance.habbit.select()
+          ..where((tbl) => tbl.deletionTime.isNull())
           ..orderBy(
             [
               (t) => OrderingTerm(
@@ -281,7 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           } else {
             return RefreshIndicator(
-              onRefresh: syncDb,
+              onRefresh: _syncDb,
               child: _buildHabbitsList(true),
             );
           }

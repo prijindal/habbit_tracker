@@ -3,14 +3,15 @@ import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:habbit_tracker/components/habbitform.dart';
-import 'package:habbit_tracker/models/config.dart';
+
+import '../components/counter.dart';
 import '../components/entryform.dart';
+import '../components/habbitform.dart';
+import '../components/listentries.dart';
+import '../components/statistics.dart';
+import '../models/config.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
-import '../components/counter.dart';
-import '../components/statistics.dart';
-import '../components/listentries.dart';
 
 class HabbitPage extends StatefulWidget {
   const HabbitPage({super.key, required this.habbitId, this.primary = true});
@@ -59,6 +60,7 @@ class HabbitPageState extends State<HabbitPage> {
   void _addWatcher() {
     _subscription = (MyDatabase.instance.habbit.select()
           ..where((tbl) => tbl.id.equals(widget.habbitId))
+          ..where((tbl) => tbl.deletionTime.isNull())
           ..limit(1))
         .watch()
         .listen((event) {
@@ -71,6 +73,7 @@ class HabbitPageState extends State<HabbitPage> {
   void _addEntriesWatcher() {
     _entriesSubscription = (MyDatabase.instance.habbitEntry.select()
           ..where((tbl) => tbl.habbit.equals(widget.habbitId))
+          ..where((tbl) => tbl.deletionTime.isNull())
           ..orderBy(
             [
               (t) => OrderingTerm(

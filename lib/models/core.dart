@@ -18,6 +18,7 @@ class Habbit extends Table {
   IntColumn get order => integer().nullable()();
   DateTimeColumn get creationTime =>
       dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletionTime => dateTime().nullable()();
 }
 
 class HabbitEntry extends Table {
@@ -25,6 +26,7 @@ class HabbitEntry extends Table {
   TextColumn get description => text().nullable()();
   DateTimeColumn get creationTime =>
       dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get deletionTime => dateTime().nullable()();
   TextColumn get habbit => text().references(Habbit, #id)();
 }
 
