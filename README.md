@@ -1,6 +1,7 @@
 # habbit_tracker
 
-A new Flutter project.
+[![Flutter](https://github.com/prijindal/habbit_tracker/actions/workflows/flutter.yml/badge.svg)](https://github.com/prijindal/habbit_tracker/actions/workflows/flutter.yml)
+Habbit Tracker Application
 
 ## Getting Started
 
