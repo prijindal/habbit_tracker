@@ -10,6 +10,7 @@ import '../helpers/sync.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
 import '../pages/habbit.dart';
+import '../pages/login.dart';
 import '../pages/profile.dart';
 
 const mediaBreakpoint = 700;
@@ -31,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _addWatcher();
     super.initState();
     Timer(
-      const Duration(seconds: 1),
+      const Duration(seconds: 5),
       _syncDb,
     );
   }
@@ -43,17 +44,49 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _syncDb() async {
-    try {
-      await syncDb();
-    } catch (e, stack) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              parseErrorToString(e, stack, "Error while syncing"),
+    final isInitialized = isFirebaseInitialized();
+    if (isInitialized) {
+      final user = await getUser();
+      if (user != null) {
+        try {
+          await syncDb();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Sync successfully"),
+              ),
+            );
+          }
+        } catch (e, stack) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  parseErrorToString(e, stack, "Error while syncing"),
+                ),
+              ),
+            );
+          }
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text("Please login to allow sync"),
+              action: SnackBarAction(
+                label: "Login",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     }
   }
