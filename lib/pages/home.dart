@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     Timer(
       const Duration(seconds: 5),
-      _syncDb,
+      _checkLoginAndSyncDb,
     );
   }
 
@@ -44,30 +44,34 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _syncDb() async {
+    try {
+      await syncDb();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Sync successfully"),
+          ),
+        );
+      }
+    } catch (e, stack) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              parseErrorToString(e, stack, "Error while syncing"),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _checkLoginAndSyncDb() async {
     final isInitialized = isFirebaseInitialized();
     if (isInitialized) {
       final user = await getUser();
       if (user != null) {
-        try {
-          await syncDb();
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Sync successfully"),
-              ),
-            );
-          }
-        } catch (e, stack) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  parseErrorToString(e, stack, "Error while syncing"),
-                ),
-              ),
-            );
-          }
-        }
+        await _syncDb();
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -75,13 +79,14 @@ class _MyHomePageState extends State<MyHomePage> {
               content: const Text("Please login to allow sync"),
               action: SnackBarAction(
                 label: "Login",
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute<void>(
                       builder: (context) => const LoginScreen(),
                     ),
                   );
+                  await _syncDb();
                 },
               ),
             ),
@@ -282,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           } else {
             return RefreshIndicator(
-              onRefresh: _syncDb,
+              onRefresh: _checkLoginAndSyncDb,
               child: _buildHabbitsList(true),
             );
           }
