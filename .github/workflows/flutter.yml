@@ -21,6 +21,14 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "11"
+      
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            build/
+            android/.gradle/
+          key: ${{ runner.os }}-flutter-${{ github.job }}-${{ hashFiles('**/*.gradle*', 'pubspec.lock') }}
       - run: flutter --version
       - run: flutter pub global activate flutterfire_cli
       - run: flutter pub get
