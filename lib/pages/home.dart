@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:habbit_tracker/pages/habbit.dart';
-import '../pages/profile.dart';
-import '../components/habbittile.dart';
+
 import '../components/habbitform.dart';
+import '../components/habbittile.dart';
+import '../helpers/sync.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
+import '../pages/habbit.dart';
+import '../pages/profile.dart';
 
 const mediaBreakpoint = 700;
 
@@ -28,12 +30,32 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     _addWatcher();
     super.initState();
+    Timer(
+      const Duration(seconds: 1),
+      _syncDb,
+    );
   }
 
   @override
   void dispose() {
     _subscription?.cancel();
     super.dispose();
+  }
+
+  Future<void> _syncDb() async {
+    try {
+      await syncDb();
+    } catch (e, stack) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              parseErrorToString(e, stack, "Error while syncing"),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   void _addWatcher() {
@@ -129,6 +151,14 @@ class _MyHomePageState extends State<MyHomePage> {
               key: Key("HabbitsListLoading"),
               child: Text(
                 "Loading...",
+              ),
+            );
+          }
+          if (_habbits!.isEmpty) {
+            return const Center(
+              key: Key("HabbitsListEmpty"),
+              child: Text(
+                "No Habbits added",
               ),
             );
           }

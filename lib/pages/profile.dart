@@ -1,68 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
-// import 'dart:html' as web_file;
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:habbit_tracker/helpers/logger.dart';
-import 'package:habbit_tracker/models/theme.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:provider/provider.dart';
 import 'dart:io';
 
+// import 'dart:html' as web_file;
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../helpers/sync.dart';
+import '../models/theme.dart';
 import '../pages/login.dart';
-import '../models/core.dart';
-import '../models/drift.dart';
-
-Future<String> _extractDbJson() async {
-  final entries =
-      await MyDatabase.instance.select(MyDatabase.instance.habbitEntry).get();
-  final habbits =
-      await MyDatabase.instance.select(MyDatabase.instance.habbit).get();
-  String encoded = jsonEncode({"habbits": habbits, "entries": entries});
-  return encoded;
-}
-
-Future<void> _jsonToDb(String jsonEncoded, BuildContext context) async {
-  final decoded = jsonDecode(jsonEncoded);
-  List<dynamic> entries = decoded["entries"] as List<dynamic>;
-  List<dynamic> habbits = decoded["habbits"] as List<dynamic>;
-  try {
-    await MyDatabase.instance.batch((batch) {
-      batch.insertAll(
-        MyDatabase.instance.habbit,
-        habbits.map(
-          (e) => HabbitData.fromJson(e as Map<String, dynamic>),
-        ),
-      );
-      batch.insertAll(
-        MyDatabase.instance.habbitEntry,
-        entries.map(
-          (a) => HabbitEntryData.fromJson(a as Map<String, dynamic>),
-        ),
-      );
-    });
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Successfully imported"),
-        ),
-      );
-    }
-  } catch (e) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
-    }
-  }
-}
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -76,12 +28,6 @@ class ProfileScreen extends StatelessWidget {
           ),
         );
       }
-      // var blob = web_file.Blob([encoded], 'text/plain', 'native');
-      // var anchorElement = web_file.AnchorElement(
-      //   href: web_file.Url.createObjectUrlFromBlob(blob).toString(),
-      // )
-      //   ..setAttribute("download", "db.json")
-      //   ..click();
     } else {
       String? downloadDirectory;
       if (Platform.isAndroid) {
@@ -101,7 +47,7 @@ class ProfileScreen extends StatelessWidget {
       if (downloadDirectory != null) {
         final path = p.join(downloadDirectory, 'db.json');
         final file = File(path);
-        final encoded = await _extractDbJson();
+        final encoded = await extractDbJson();
         await file.writeAsString(encoded);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -132,8 +78,25 @@ class ProfileScreen extends StatelessWidget {
         jsonEncoded = await File(result.files.single.path!).readAsString();
       }
       if (jsonEncoded != null) {
-        if (context.mounted) {
-          await _jsonToDb(jsonEncoded, context);
+        try {
+          await jsonToDb(jsonEncoded);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Successfully imported"),
+              ),
+            );
+          }
+        } catch (e, stack) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  parseErrorToString(e, stack, "Error while syncing"),
+                ),
+              ),
+            );
+          }
         }
       }
     } else {
@@ -148,12 +111,8 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _profileTile() {
-    try {
-      if (Firebase.apps.isNotEmpty) {
-        return const ProfileAuthTile();
-      }
-    } catch (e, stack) {
-      AppLogger.instance.e("Firebase.apps error", e, stack);
+    if (isFirebaseInitialized()) {
+      return const ProfileAuthTile();
     }
     return const ListTile(
       title: Text("Firebase is not available"),
@@ -212,69 +171,14 @@ class _ProfileAuthTileState extends State<ProfileAuthTile> {
     super.dispose();
   }
 
-  Future<void> _downloadFile() async {
-    if (user != null) {
-      try {
-        final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
-        final dbBytes = await ref.getData();
-        if (dbBytes != null) {
-          final jsonEncoded = String.fromCharCodes(dbBytes);
-          if (context.mounted) {
-            await _jsonToDb(jsonEncoded, context);
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("File downloaded successfully"),
-                ),
-              );
-            }
-          }
-        }
-      } on FirebaseException catch (e, stack) {
-        AppLogger.instance.e("Error while downloading", e, stack);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.message ?? "Error while downloading"),
-            ),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _uploadFile() async {
-    if (user != null) {
-      try {
-        final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
-        final encoded = await _extractDbJson();
-        await ref.putString(encoded);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("File uploaded successfully"),
-            ),
-          );
-        }
-      } on FirebaseException catch (e, stack) {
-        AppLogger.instance.e("Error while uploading", e, stack);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.message ?? "Error while uploading"),
-            ),
-          );
-        }
-      }
-    }
-  }
-
   void _syncMetadata() async {
-    final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
-    final metadata = await ref.getMetadata();
-    setState(() {
-      this.metadata = metadata;
-    });
+    if (user != null) {
+      final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
+      final metadata = await ref.getMetadata();
+      setState(() {
+        this.metadata = metadata;
+      });
+    }
   }
 
   @override
@@ -284,9 +188,53 @@ class _ProfileAuthTileState extends State<ProfileAuthTile> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
+                title: const Text("Sync database"),
+                onTap: () async {
+                  try {
+                    await syncDb();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Sync successfully"),
+                        ),
+                      );
+                    }
+                  } catch (e, stack) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            parseErrorToString(e, stack, "Error while syncing"),
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+              ListTile(
                 title: const Text("Upload Database"),
                 onTap: () async {
-                  _uploadFile();
+                  try {
+                    await uploadFile();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("File uploaded successfully"),
+                        ),
+                      );
+                    }
+                  } catch (e, stack) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            parseErrorToString(e, stack, "Error while syncing"),
+                          ),
+                        ),
+                      );
+                    }
+                  }
                 },
               ),
               ListTile(
@@ -295,7 +243,26 @@ class _ProfileAuthTileState extends State<ProfileAuthTile> {
                     ? const Text("Database not synced yet")
                     : Text("Last Synced at ${metadata!.updated}"),
                 onTap: () async {
-                  _downloadFile();
+                  try {
+                    await downloadFile();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("File downloaded successfully"),
+                        ),
+                      );
+                    }
+                  } catch (e, stack) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            parseErrorToString(e, stack, "Error while syncing"),
+                          ),
+                        ),
+                      );
+                    }
+                  }
                 },
               )
             ],
