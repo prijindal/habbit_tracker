@@ -10,12 +10,14 @@ class HabbitDialogForm extends StatefulWidget {
     super.key,
     this.name,
     this.description,
+    this.hidden,
     this.config,
   });
 
   final String? name;
   final String? description;
   final String? config;
+  final bool? hidden;
 
   @override
   State<HabbitDialogForm> createState() => _HabbitDialogFormState();
@@ -35,6 +37,7 @@ class HabbitDialogForm extends StatefulWidget {
           name: habbit.name,
           description: habbit.description,
           config: habbit.config,
+          hidden: habbit.hidden,
         );
       },
     );
@@ -51,12 +54,14 @@ class _HabbitDialogFormState extends State<HabbitDialogForm> {
   final TextEditingController _descriptionFieldController =
       TextEditingController();
   HabbitConfig _habbitConfig = HabbitConfig.positive;
+  bool _hidden = false;
 
   @override
   void initState() {
     _nameFieldController.text = widget.name ?? "";
     _descriptionFieldController.text = widget.description ?? "";
     _habbitConfig = HabbitConfig.getConfig(widget.config);
+    _hidden = widget.hidden ?? false;
     super.initState();
   }
 
@@ -78,6 +83,15 @@ class _HabbitDialogFormState extends State<HabbitDialogForm> {
               onChanged: (value) {},
               controller: _descriptionFieldController,
               decoration: const InputDecoration(hintText: "Description"),
+            ),
+            CheckboxListTile(
+              onChanged: (value) {
+                setState(() {
+                  _hidden = value ?? false;
+                });
+              },
+              value: _hidden,
+              title: const Text("Hidden"),
             ),
             DropdownButton<HabbitConfig>(
               isExpanded: true,
@@ -114,6 +128,7 @@ class _HabbitDialogFormState extends State<HabbitDialogForm> {
                   name: drift.Value(_nameFieldController.text),
                   description: drift.Value(_descriptionFieldController.text),
                   config: drift.Value(_habbitConfig.code),
+                  hidden: drift.Value(_hidden),
                 ),
               );
             },

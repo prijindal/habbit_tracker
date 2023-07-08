@@ -26,6 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<HabbitData>? _habbits;
   StreamSubscription<List<HabbitData>>? _subscription;
   int selectedHabbitIndex = 0;
+  bool _showHidden = false;
 
   @override
   void initState() {
@@ -97,7 +98,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _addWatcher() {
-    _subscription = (MyDatabase.instance.habbit.select()
+    if (_subscription != null) {
+      _subscription?.cancel();
+    }
+    final query = MyDatabase.instance.habbit.select();
+    if (!_showHidden) {
+      query.where((tbl) => tbl.hidden.equals(false));
+    }
+    _subscription = (query
           ..where((tbl) => tbl.deletionTime.isNull())
           ..orderBy(
             [
@@ -137,6 +145,21 @@ class _MyHomePageState extends State<MyHomePage> {
     return AppBar(
       title: const Text("Habbits"),
       actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 20.0),
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _showHidden = !_showHidden;
+              });
+              _addWatcher();
+            },
+            child: Icon(
+              _showHidden ? Icons.visibility : Icons.visibility_off,
+              size: 26.0,
+            ),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.only(right: 20.0),
           child: GestureDetector(

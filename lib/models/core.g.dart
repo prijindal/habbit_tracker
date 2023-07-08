@@ -51,9 +51,29 @@ class $HabbitTable extends Habbit with TableInfo<$HabbitTable, HabbitData> {
   late final GeneratedColumn<DateTime> deletionTime = GeneratedColumn<DateTime>(
       'deletion_time', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _hiddenMeta = const VerificationMeta('hidden');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, description, config, order, creationTime, deletionTime];
+  late final GeneratedColumn<bool> hidden =
+      GeneratedColumn<bool>('hidden', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("hidden" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          clientDefault: () => false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        description,
+        config,
+        order,
+        creationTime,
+        deletionTime,
+        hidden
+      ];
   @override
   String get aliasedName => _alias ?? 'habbit';
   @override
@@ -98,6 +118,10 @@ class $HabbitTable extends Habbit with TableInfo<$HabbitTable, HabbitData> {
           deletionTime.isAcceptableOrUnknown(
               data['deletion_time']!, _deletionTimeMeta));
     }
+    if (data.containsKey('hidden')) {
+      context.handle(_hiddenMeta,
+          hidden.isAcceptableOrUnknown(data['hidden']!, _hiddenMeta));
+    }
     return context;
   }
 
@@ -121,6 +145,8 @@ class $HabbitTable extends Habbit with TableInfo<$HabbitTable, HabbitData> {
           DriftSqlType.dateTime, data['${effectivePrefix}creation_time'])!,
       deletionTime: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}deletion_time']),
+      hidden: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}hidden'])!,
     );
   }
 
@@ -138,6 +164,7 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
   final int? order;
   final DateTime creationTime;
   final DateTime? deletionTime;
+  final bool hidden;
   const HabbitData(
       {required this.id,
       required this.name,
@@ -145,7 +172,8 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
       this.config,
       this.order,
       required this.creationTime,
-      this.deletionTime});
+      this.deletionTime,
+      required this.hidden});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -164,6 +192,7 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
     if (!nullToAbsent || deletionTime != null) {
       map['deletion_time'] = Variable<DateTime>(deletionTime);
     }
+    map['hidden'] = Variable<bool>(hidden);
     return map;
   }
 
@@ -182,6 +211,7 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
       deletionTime: deletionTime == null && nullToAbsent
           ? const Value.absent()
           : Value(deletionTime),
+      hidden: Value(hidden),
     );
   }
 
@@ -196,6 +226,7 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
       order: serializer.fromJson<int?>(json['order']),
       creationTime: serializer.fromJson<DateTime>(json['creationTime']),
       deletionTime: serializer.fromJson<DateTime?>(json['deletionTime']),
+      hidden: serializer.fromJson<bool>(json['hidden']),
     );
   }
   @override
@@ -209,6 +240,7 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
       'order': serializer.toJson<int?>(order),
       'creationTime': serializer.toJson<DateTime>(creationTime),
       'deletionTime': serializer.toJson<DateTime?>(deletionTime),
+      'hidden': serializer.toJson<bool>(hidden),
     };
   }
 
@@ -219,7 +251,8 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
           Value<String?> config = const Value.absent(),
           Value<int?> order = const Value.absent(),
           DateTime? creationTime,
-          Value<DateTime?> deletionTime = const Value.absent()}) =>
+          Value<DateTime?> deletionTime = const Value.absent(),
+          bool? hidden}) =>
       HabbitData(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -229,6 +262,7 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
         creationTime: creationTime ?? this.creationTime,
         deletionTime:
             deletionTime.present ? deletionTime.value : this.deletionTime,
+        hidden: hidden ?? this.hidden,
       );
   @override
   String toString() {
@@ -239,14 +273,15 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
           ..write('config: $config, ')
           ..write('order: $order, ')
           ..write('creationTime: $creationTime, ')
-          ..write('deletionTime: $deletionTime')
+          ..write('deletionTime: $deletionTime, ')
+          ..write('hidden: $hidden')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(
-      id, name, description, config, order, creationTime, deletionTime);
+      id, name, description, config, order, creationTime, deletionTime, hidden);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -257,7 +292,8 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
           other.config == this.config &&
           other.order == this.order &&
           other.creationTime == this.creationTime &&
-          other.deletionTime == this.deletionTime);
+          other.deletionTime == this.deletionTime &&
+          other.hidden == this.hidden);
 }
 
 class HabbitCompanion extends UpdateCompanion<HabbitData> {
@@ -268,6 +304,7 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
   final Value<int?> order;
   final Value<DateTime> creationTime;
   final Value<DateTime?> deletionTime;
+  final Value<bool> hidden;
   final Value<int> rowid;
   const HabbitCompanion({
     this.id = const Value.absent(),
@@ -277,6 +314,7 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
     this.order = const Value.absent(),
     this.creationTime = const Value.absent(),
     this.deletionTime = const Value.absent(),
+    this.hidden = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   HabbitCompanion.insert({
@@ -287,6 +325,7 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
     this.order = const Value.absent(),
     this.creationTime = const Value.absent(),
     this.deletionTime = const Value.absent(),
+    this.hidden = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : name = Value(name);
   static Insertable<HabbitData> custom({
@@ -297,6 +336,7 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
     Expression<int>? order,
     Expression<DateTime>? creationTime,
     Expression<DateTime>? deletionTime,
+    Expression<bool>? hidden,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -307,6 +347,7 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
       if (order != null) 'order': order,
       if (creationTime != null) 'creation_time': creationTime,
       if (deletionTime != null) 'deletion_time': deletionTime,
+      if (hidden != null) 'hidden': hidden,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -319,6 +360,7 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
       Value<int?>? order,
       Value<DateTime>? creationTime,
       Value<DateTime?>? deletionTime,
+      Value<bool>? hidden,
       Value<int>? rowid}) {
     return HabbitCompanion(
       id: id ?? this.id,
@@ -328,6 +370,7 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
       order: order ?? this.order,
       creationTime: creationTime ?? this.creationTime,
       deletionTime: deletionTime ?? this.deletionTime,
+      hidden: hidden ?? this.hidden,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -356,6 +399,9 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
     if (deletionTime.present) {
       map['deletion_time'] = Variable<DateTime>(deletionTime.value);
     }
+    if (hidden.present) {
+      map['hidden'] = Variable<bool>(hidden.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -372,6 +418,7 @@ class HabbitCompanion extends UpdateCompanion<HabbitData> {
           ..write('order: $order, ')
           ..write('creationTime: $creationTime, ')
           ..write('deletionTime: $deletionTime, ')
+          ..write('hidden: $hidden, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

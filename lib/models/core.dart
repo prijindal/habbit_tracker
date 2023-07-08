@@ -19,6 +19,7 @@ class Habbit extends Table {
   DateTimeColumn get creationTime =>
       dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get deletionTime => dateTime().nullable()();
+  BoolColumn get hidden => boolean().clientDefault(() => false)();
 }
 
 class HabbitEntry extends Table {
