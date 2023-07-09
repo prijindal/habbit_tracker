@@ -117,7 +117,7 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     }
     final config = HabbitConfig.getConfig(habbit.config);
     for (var element in config.charts) {
-      final titlesData = FlTitlesData(
+      const titlesData = FlTitlesData(
         show: true,
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
