@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
+import 'package:easy_debounce/easy_throttle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -106,22 +107,30 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _quickActionHandler(String type) async {
+    if (type.startsWith("$addHabbitShortcut:")) {
+      final habbitId = type.split("$addHabbitShortcut:")[1];
+      final habbit = await ((MyDatabase.instance.habbit.select())
+            ..where((u) => u.id.equals(habbitId)))
+          .getSingleOrNull();
+      if (habbit != null && context.mounted) {
+        await recordEntry(
+          habbit,
+          context,
+          snackBarDuration: const Duration(seconds: 3),
+        );
+        AppLogger.instance.d("Added Habbit $habbitId");
+      }
+    }
+  }
+
   void _handleQuickActions() {
     quickActions.initialize((type) async {
-      if (type.startsWith("$addHabbitShortcut:")) {
-        final habbitId = type.split("$addHabbitShortcut:")[1];
-        final habbit = await ((MyDatabase.instance.habbit.select())
-              ..where((u) => u.id.equals(habbitId)))
-            .getSingleOrNull();
-        if (habbit != null && context.mounted) {
-          await recordEntry(
-            habbit,
-            context,
-            snackBarDuration: const Duration(seconds: 3),
-          );
-          AppLogger.instance.d("Added Habbit $habbitId");
-        }
-      }
+      EasyThrottle.throttle(
+        "quick-action-handler",
+        const Duration(seconds: 10),
+        () => _quickActionHandler(type),
+      );
     });
   }
 
