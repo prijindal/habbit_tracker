@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import './firebase_options.dart';
 import './helpers/logger.dart';
 import './models/theme.dart';
@@ -16,7 +17,11 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e, stack) {
-    AppLogger.instance.e("Firebase cannot be initialized", e, stack);
+    AppLogger.instance.e(
+      "Firebase cannot be initialized",
+      error: e,
+      stackTrace: stack,
+    );
   }
 }
 

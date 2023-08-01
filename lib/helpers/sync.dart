@@ -47,7 +47,11 @@ bool isFirebaseInitialized() {
   try {
     return Firebase.apps.isNotEmpty;
   } catch (e, stack) {
-    AppLogger.instance.e("Firebase.apps error", e, stack);
+    AppLogger.instance.e(
+      "Firebase.apps error",
+      error: e,
+      stackTrace: stack,
+    );
     return false;
   }
 }
@@ -91,7 +95,11 @@ String parseErrorToString(
   StackTrace stack, [
   String defaultMessage = "Error While syncing",
 ]) {
-  AppLogger.instance.e(defaultMessage, e, stack);
+  AppLogger.instance.e(
+    defaultMessage,
+    error: e,
+    stackTrace: stack,
+  );
   var error = defaultMessage;
   if (e is FirebaseException && e.message != null) {
     error = e.message!;

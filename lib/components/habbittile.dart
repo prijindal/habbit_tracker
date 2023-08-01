@@ -5,8 +5,8 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 import '../components/deletehabbitdialog.dart';
-import '../components/entryform.dart';
 import '../components/habbitform.dart';
+import '../helpers/entry.dart';
 import '../helpers/stats.dart';
 import '../models/config.dart';
 import '../models/core.dart';
@@ -86,44 +86,6 @@ class _HabbitTileState extends State<HabbitTile> {
     return false;
   }
 
-  void _editEntry(HabbitEntryData entry) async {
-    await EntryDialogForm.editEntry(
-      context: context,
-      habbitId: widget.habbit.id,
-      entry: entry,
-    );
-  }
-
-  void _recordEntry() async {
-    final entry = HabbitEntryCompanion(
-      creationTime: Value(DateTime.now()),
-      habbit: Value(widget.habbit.id),
-    );
-    final savedEntryId = await MyDatabase.instance
-        .into(MyDatabase.instance.habbitEntry)
-        .insert(entry);
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(milliseconds: 100),
-          content: Text("New entry for ${widget.habbit.name} saved"),
-          action: SnackBarAction(
-            label: "Edit",
-            onPressed: () async {
-              final savedEntry = await (MyDatabase.instance.habbitEntry.select()
-                    ..where(
-                      (tbl) => tbl.rowId.equals(savedEntryId),
-                    )
-                    ..where((tbl) => tbl.deletionTime.isNull()))
-                  .getSingle();
-              _editEntry(savedEntry);
-            },
-          ),
-        ),
-      );
-    }
-  }
-
   String _getTodayCount() {
     var text = "No Data";
     final count = getTodayCount(_habbitEntries);
@@ -201,7 +163,7 @@ class _HabbitTileState extends State<HabbitTile> {
                 Icons.add,
                 color: config.colorScheme.primary,
               ),
-              onPressed: () => _recordEntry(),
+              onPressed: () => recordEntry(widget.habbit, context),
             ),
           ],
         );
@@ -211,7 +173,7 @@ class _HabbitTileState extends State<HabbitTile> {
             Icons.add,
             color: config.colorScheme.primary,
           ),
-          onPressed: () => _recordEntry(),
+          onPressed: () => recordEntry(widget.habbit, context),
         );
     }
   }
