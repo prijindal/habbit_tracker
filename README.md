@@ -1,6 +1,10 @@
 # habbit_tracker
 
 [![Flutter](https://github.com/prijindal/habbit_tracker/actions/workflows/flutter.yml/badge.svg)](https://github.com/prijindal/habbit_tracker/actions/workflows/flutter.yml)
+[![codecov](https://codecov.io/gh/prijindal/habbit_tracker/branch/main/graph/badge.svg?token=75K4JMDVSJ)](https://codecov.io/gh/prijindal/habbit_tracker)
+
+
+[Builds](https://nightly.link/prijindal/habbit_tracker/workflows/flutter/main)
 
 
 Habbit Tracker Application
