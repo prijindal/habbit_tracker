@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../helpers/stats.dart' as stats;
 import '../models/core.dart';
 
@@ -22,7 +23,7 @@ class HabbitConfig {
     code: "positive_habbit",
     colorScheme: ColorScheme.fromSwatch(
       primarySwatch: Colors.lightGreen,
-      primaryColorDark: Colors.green,
+      // primaryColorDark: Colors.green,
     ),
     quickAddButtonConfigType: QuickAddButtonConfigType.addSubtract,
     quickSubtitleType: QuickSubtitleType.todayCount,
@@ -40,7 +41,7 @@ class HabbitConfig {
     code: "negative_habbit",
     colorScheme: ColorScheme.fromSwatch(
       primarySwatch: Colors.purple,
-      primaryColorDark: Colors.deepPurple,
+      // primaryColorDark: Colors.deepPurple,
     ),
     quickAddButtonConfigType: QuickAddButtonConfigType.add,
     quickSubtitleType: QuickSubtitleType.currentStreak,
