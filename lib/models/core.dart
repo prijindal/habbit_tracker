@@ -35,7 +35,7 @@ class HabbitEntry extends Table {
 // tables we just defined. We'll see how to use that database class in a moment.
 @DriftDatabase(tables: [HabbitEntry])
 class SharedDatabase extends _$SharedDatabase {
-  SharedDatabase(QueryExecutor e) : super(e);
+  SharedDatabase(super.e);
 
   @override
   int get schemaVersion => 1;

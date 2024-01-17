@@ -59,7 +59,7 @@ class $HabbitTable extends Habbit with TableInfo<$HabbitTable, HabbitData> {
           requiredDuringInsert: false,
           defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
             SqlDialect.sqlite: 'CHECK ("hidden" IN (0, 1))',
-            SqlDialect.mysql: '',
+            SqlDialect.mariadb: '',
             SqlDialect.postgres: '',
           }),
           clientDefault: () => false);
