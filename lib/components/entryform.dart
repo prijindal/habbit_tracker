@@ -70,11 +70,13 @@ class _EntryDialogFormState extends State<EntryDialogForm> {
           DateTimeField(
             decoration:
                 const InputDecoration(hintText: 'Please select date and time'),
-            selectedDate: _selectedDate,
-            onDateSelected: (DateTime value) {
-              setState(() {
-                _selectedDate = value;
-              });
+            value: _selectedDate,
+            onChanged: (DateTime? value) {
+              if (value != null) {
+                setState(() {
+                  _selectedDate = value;
+                });
+              }
             },
           )
         ],
