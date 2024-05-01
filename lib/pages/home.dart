@@ -179,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final query = MyDatabase.instance.query<Habbit>(
-        r'deletionTime == nil SORT(order DESC) SORT(creationTime DESC)');
+        r'deletionTime == nil SORT(creationTime ASC) SORT(order ASC)');
 
     _subscription = query.changes.listen((event) {
       var results = event.results.toList();
@@ -187,7 +187,13 @@ class _MyHomePageState extends State<MyHomePage> {
         results = results.where((element) => element.hidden == false).toList();
       }
       setState(() {
-        _habbits = results;
+        _habbits = results
+          ..sort((a, b) {
+            if (a.order == null || b.order == null) {
+              return a.creationTime.difference(b.creationTime).inSeconds;
+            }
+            return a.order!.compareTo(b.order!);
+          });
       });
     });
   }
@@ -327,6 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
           await MyDatabase.instance.writeAsync(() {
             for (var i = 0; i < _habbits!.length; i++) {
               var habbit = _habbits![i];
+              habbit.order = i;
               MyDatabase.instance.add(habbit, update: true);
             }
           });
