@@ -26,14 +26,14 @@ class _CalendarsSubPageState extends State<CalendarsSubPage> {
   CalendarFormat _calendarformat = CalendarFormat.month;
 
   List<DateTime> _firstAndLast() {
-    final entries = (widget.entries ?? [])
+    final entries = List<HabbitEntry>.from(widget.entries ?? [])
       ..sort((a, b) {
         return a.creationTime.difference(b.creationTime).inSeconds;
       });
     return [
-      entries.firstOrNull?.creationTime ??
+      entries.firstOrNull?.creationTime.toLocal() ??
           (DateTime.now().subtract(const Duration(days: 1))),
-      entries.lastOrNull?.creationTime ??
+      entries.lastOrNull?.creationTime.toLocal() ??
           (DateTime.now().add(const Duration(days: 1))),
     ];
   }
@@ -111,7 +111,7 @@ class _CalendarsSubPageState extends State<CalendarsSubPage> {
       itemCount: entries.isNotEmpty ? entries.length : 1,
       itemBuilder: (BuildContext context, int index) {
         if (entries.isEmpty) {
-          return const Text("No Entry");
+          return const ListTile(title: Text("No Entry"));
         }
         final entry = entries[index];
         return AnimationConfiguration.staggeredList(

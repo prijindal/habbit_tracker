@@ -24,7 +24,7 @@ class StatisticsSubPage extends StatefulWidget {
 }
 
 class _StatisticsSubPageState extends State<StatisticsSubPage> {
-  StatsIntervals statsIntervals = StatsIntervals.all;
+  StatsIntervals statsIntervals = StatsIntervals.oneWeek;
 
   @override
   void initState() {
@@ -116,6 +116,26 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     }
   }
 
+  DateTime? _getStartDate() {
+    DateTime? startDate = getEntries().firstOrNull?.creationTime;
+    switch (statsIntervals) {
+      case StatsIntervals.oneYear:
+        startDate = DateTime.now().subtract(const Duration(days: 365));
+        break;
+      case StatsIntervals.threeMonths:
+        startDate = DateTime.now().subtract(const Duration(days: 90));
+        break;
+      case StatsIntervals.oneMonth:
+        startDate = DateTime.now().subtract(const Duration(days: 30));
+        break;
+      case StatsIntervals.oneWeek:
+        startDate = DateTime.now().subtract(const Duration(days: 7));
+      default:
+        break;
+    }
+    return startDate;
+  }
+
   List<Widget> _buildStats() {
     final habbit = widget.habbit;
     final list = <ListTile>[];
@@ -124,11 +144,12 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     }
     final config = HabbitConfig.getConfig(habbit.config);
     for (var element in config.statistics) {
+      final endDate = getEntries().lastOrNull?.creationTime;
       list.add(
         ListTile(
           title: Text(element.name),
           subtitle: Text(
-            element.transform(getEntries()),
+            element.transform(getEntries(), _getStartDate(), endDate),
           ),
         ),
       );
@@ -211,9 +232,10 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
           );
           break;
         case HabbitChart.dayCountsChart:
-          final countsData = countPerDaysData(getEntries())
-            ..sort((a, b) =>
-                a.date.millisecondsSinceEpoch - b.date.millisecondsSinceEpoch);
+          final countsData = countPerDaysData(
+            getEntries(),
+          )..sort((a, b) =>
+              a.date.millisecondsSinceEpoch - b.date.millisecondsSinceEpoch);
           final chartsData = countsData
               .map(
                 (e) => BarChartGroupData(

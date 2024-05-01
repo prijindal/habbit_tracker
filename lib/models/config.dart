@@ -119,7 +119,9 @@ enum ExtraCounter {
 
 class HabbitStatistic {
   String name;
-  String Function(List<HabbitEntry> entries) transform;
+  String Function(
+          List<HabbitEntry> entries, DateTime? startDate, DateTime? endDate)
+      transform;
 
   HabbitStatistic({
     required this.name,
@@ -128,18 +130,18 @@ class HabbitStatistic {
 
   static final total = HabbitStatistic(
     name: "Total entries",
-    transform: (entries) => entries.length.toString(),
+    transform: (entries, startDate, endDate) => entries.length.toString(),
   );
 
   static final currentStreak = HabbitStatistic(
     name: "Current streak",
-    transform: (entries) =>
+    transform: (entries, startDate, endDate) =>
         stats.durationToStreak(stats.currentStreak(entries)),
   );
 
   static final shortestStreak = HabbitStatistic(
     name: "Shortest streak",
-    transform: (entries) {
+    transform: (entries, startDate, endDate) {
       if (entries.isNotEmpty && stats.allDurationsData(entries).isNotEmpty) {
         final shortest = stats.allDurationsData(entries).first.duration;
         return stats.durationToStreak(shortest);
@@ -150,13 +152,13 @@ class HabbitStatistic {
 
   static final longestStreak = HabbitStatistic(
     name: "Longest streak",
-    transform: (entries) =>
+    transform: (entries, startDate, endDate) =>
         stats.durationToStreak(stats.longestStreak(entries)),
   );
 
   static final averageDuration = HabbitStatistic(
     name: "Average Duration",
-    transform: (entries) {
+    transform: (entries, startDate, endDate) {
       final List<stats.DurationData> durations =
           stats.allDurationsData(entries);
       Duration totalDuration = const Duration();
@@ -175,10 +177,12 @@ class HabbitStatistic {
 
   static final averageCounts = HabbitStatistic(
     name: "Average counts",
-    transform: (entries) {
-      final counts = stats.countPerDaysData(entries);
+    transform: (entries, startDate, endDate) {
+      final counts = stats.countPerDaysData(entries, true, startDate);
       var sum = 0;
       for (var element in counts) {
+        // print(element.date);
+        // print(element.count);
         sum += element.count;
       }
       return (sum / counts.length).toStringAsFixed(2);

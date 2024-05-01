@@ -94,7 +94,7 @@ List<DateTime> getDaysInBetween(DateTime startDate, DateTime endDate) {
 }
 
 List<CountsDayData> countPerDaysData(List<HabbitEntry>? entries,
-    [bool includeEmptyDates = true]) {
+    [bool includeEmptyDates = true, DateTime? startDate]) {
   final counts = <DateTime, int>{};
   if (entries == null) {
     return [];
@@ -113,7 +113,7 @@ List<CountsDayData> countPerDaysData(List<HabbitEntry>? entries,
   }
   if (includeEmptyDates && entries.isNotEmpty) {
     final daysInBetween = getDaysInBetween(
-      entries.last.creationTime.toLocal(),
+      startDate?.toLocal() ?? entries.last.creationTime.toLocal(),
       entries.first.creationTime.toLocal(),
     );
     for (var day in daysInBetween) {
