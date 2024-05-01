@@ -49,7 +49,7 @@ Future<void> jsonToDb(String jsonEncoded) async {
   });
   for (var i = 0; i < entries.length; i++) {
     if (entries[i]["id"] is String) {
-      entries[i]["id"] = new ObjectId().toEJson();
+      entries[i]["id"] = ObjectId().toEJson();
     }
     if (entries[i]["creationTime"] is int) {
       entries[i]["creationTime"] = toEJson(DateTime.fromMillisecondsSinceEpoch(

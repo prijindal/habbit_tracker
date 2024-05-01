@@ -74,16 +74,6 @@ class HabbitPageState extends State<HabbitPage> {
     _entriesSubscription = query.changes.listen((event) {
       setState(() {
         _entries = event.results.toList();
-        print(7 * 24 * 60);
-        for (var entry in _entries!) {
-          print(entry.creationTime.toLocal());
-          print(
-            DateTime.now()
-                .toLocal()
-                .difference(entry.creationTime.toLocal())
-                .inMinutes,
-          );
-        }
       });
     });
   }

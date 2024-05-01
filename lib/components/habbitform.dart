@@ -26,23 +26,23 @@ class HabbitDialogForm extends StatefulWidget {
     required BuildContext context,
     required Habbit? habbit,
   }) async {
-    final _habbit = habbit;
-    if (_habbit == null) {
+    final habbit0 = habbit;
+    if (habbit0 == null) {
       throw StateError("habbit should not be null");
     }
     final editedData = await showDialog<Habbit>(
       context: context,
       builder: (BuildContext context) {
         return HabbitDialogForm(
-          name: _habbit.name,
-          description: _habbit.description,
-          config: _habbit.config,
-          hidden: _habbit.hidden,
+          name: habbit0.name,
+          description: habbit0.description,
+          config: habbit0.config,
+          hidden: habbit0.hidden,
         );
       },
     );
     if (editedData != null) {
-      editedData.id = _habbit.id;
+      editedData.id = habbit0.id;
       MyDatabase.instance.writeAsync(() {
         MyDatabase.instance.add<Habbit>(editedData, update: true);
       });

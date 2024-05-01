@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _syncDb() async {
     try {
       await syncDb();
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Sync successfully"),
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       }
     } catch (e, stack) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (user != null) {
         await _syncDb();
       } else {
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text("Please login to allow sync"),
@@ -140,7 +140,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // final results = MyDatabase.instance
     //     .query<HabbitEntry>(r'@count DISTINCT(habbit) LIMIT(3)', []).toList();
     // print(results);
-    // TODO
     // final count = MyDatabase.instance.habbitEntry.id.count();
     // final query = (MyDatabase.instance.habbitEntry.selectOnly())
     //   ..addColumns([MyDatabase.instance.habbitEntry.habbit, count])

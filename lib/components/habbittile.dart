@@ -92,7 +92,7 @@ class _HabbitTileState extends State<HabbitTile> {
         r'habbit.id == $0 AND deletionTime == nil SORT(creationTime DESC) LIMIT(1)',
         [widget.habbit.id]).firstOrNull;
     if (lastEntry == null) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             duration: const Duration(milliseconds: 100),
@@ -104,7 +104,7 @@ class _HabbitTileState extends State<HabbitTile> {
       await MyDatabase.instance.writeAsync(() {
         MyDatabase.instance.delete<HabbitEntry>(lastEntry);
       });
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             duration: const Duration(milliseconds: 100),

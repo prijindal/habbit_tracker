@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signUpUser() async {
     try {
       final creds = await _getCreds("signup");
-      if (context.mounted) {
+      if (mounted) {
         Navigator.of(context).pop<UserCredential>(creds);
       }
     } on FirebaseAuthException catch (e, stack) {
@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
         error: e,
         stackTrace: stack,
       );
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.message ?? "Error while signing up"),
@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
       final creds = await _getCreds("login");
-      if (context.mounted) {
+      if (mounted) {
         Navigator.of(context).pop<UserCredential>(creds);
       }
     } on FirebaseAuthException catch (e, stack) {
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (e.code == "user-not-found") {
         await _signUpUser();
       } else {
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.message ?? "Error while logging in"),
