@@ -74,6 +74,29 @@ class _CalendarsSubPageState extends State<CalendarsSubPage> {
           _focusedDay = focusedDay;
         });
       },
+      availableCalendarFormats: const {CalendarFormat.month: 'Month'},
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(
+          color: Theme.of(context).colorScheme.inverseSurface,
+        ),
+        weekendStyle: TextStyle(
+          color: Theme.of(context).colorScheme.outline,
+        ),
+      ),
+      calendarStyle: CalendarStyle(
+        markerDecoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          shape: BoxShape.circle,
+        ),
+        selectedDecoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.inversePrimary,
+          shape: BoxShape.circle,
+        ),
+        selectedTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.inverseSurface,
+          fontSize: 16.0,
+        ),
+      ),
       currentDay: DateTime.now(),
       focusedDay: _focusedDay,
       firstDay: _firstDay,
