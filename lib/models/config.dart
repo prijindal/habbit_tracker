@@ -28,7 +28,9 @@ class HabbitConfig {
     quickAddButtonConfigType: QuickAddButtonConfigType.addSubtract,
     quickSubtitleType: QuickSubtitleType.todayCount,
     counterTitle: CounterTitle.todayCount,
-    extraCounters: [],
+    extraCounters: [
+      ExtraCounter.currentStreak,
+    ],
     statistics: [
       HabbitStatistic.total,
       HabbitStatistic.averageCounts,
@@ -117,7 +119,7 @@ enum ExtraCounter {
 
 class HabbitStatistic {
   String name;
-  String Function(List<HabbitEntryData> entries) transform;
+  String Function(List<HabbitEntry> entries) transform;
 
   HabbitStatistic({
     required this.name,

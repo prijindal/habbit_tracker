@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:drift/drift.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:realm/realm.dart';
 
 import '../models/core.dart';
-import '../models/drift.dart';
+import '../models/database.dart';
 import 'logger.dart';
 
 Future<String> extractDbJson() async {
-  final entries =
-      await MyDatabase.instance.select(MyDatabase.instance.habbitEntry).get();
-  final habbits =
-      await MyDatabase.instance.select(MyDatabase.instance.habbit).get();
-  String encoded = jsonEncode({"habbits": habbits, "entries": entries});
+  final entries = MyDatabase.instance.all<HabbitEntry>();
+  final habbits = MyDatabase.instance.all<Habbit>();
+
+  String encoded =
+      jsonEncode({"habbits": toEJson(habbits), "entries": toEJson(entries)});
   AppLogger.instance.i("Extracted data from database");
   return encoded;
 }
@@ -24,22 +24,54 @@ Future<void> jsonToDb(String jsonEncoded) async {
   final decoded = jsonDecode(jsonEncoded);
   List<dynamic> entries = decoded["entries"] as List<dynamic>;
   List<dynamic> habbits = decoded["habbits"] as List<dynamic>;
-  await MyDatabase.instance.batch((batch) {
-    batch.insertAll(
-      MyDatabase.instance.habbit,
-      habbits.map(
-        (e) => HabbitData.fromJson(e as Map<String, dynamic>),
-      ),
-      mode: InsertMode.insertOrIgnore,
-    );
-    batch.insertAll(
-      MyDatabase.instance.habbitEntry,
-      entries.map(
-        (a) => HabbitEntryData.fromJson(a as Map<String, dynamic>),
-      ),
-      mode: InsertMode.insertOrIgnore,
-    );
+  Map<String, ObjectId> oldToNewIds = {};
+  for (var i = 0; i < habbits.length; i++) {
+    if (habbits[i]["id"] is String) {
+      final newObjectId = ObjectId();
+      oldToNewIds[habbits[i]["id"] as String] = newObjectId;
+      habbits[i]["id"] = newObjectId.toEJson();
+    }
+    if (habbits[i]["creationTime"] is int) {
+      habbits[i]["creationTime"] = toEJson(DateTime.fromMillisecondsSinceEpoch(
+          habbits[i]["creationTime"] as int));
+    }
+    if (habbits[i]["deletionTime"] is int) {
+      habbits[i]["deletionTime"] = toEJson(DateTime.fromMillisecondsSinceEpoch(
+          habbits[i]["deletionTime"] as int));
+    }
+  }
+  await MyDatabase.instance.writeAsync(() {
+    MyDatabase.instance.addAll(
+        habbits.map(
+          (e) => fromEJson<Habbit>(e),
+        ),
+        update: true);
   });
+  for (var i = 0; i < entries.length; i++) {
+    if (entries[i]["id"] is String) {
+      entries[i]["id"] = new ObjectId().toEJson();
+    }
+    if (entries[i]["creationTime"] is int) {
+      entries[i]["creationTime"] = toEJson(DateTime.fromMillisecondsSinceEpoch(
+          entries[i]["creationTime"] as int));
+    }
+    if (entries[i]["deletionTime"] is int) {
+      entries[i]["deletionTime"] = toEJson(DateTime.fromMillisecondsSinceEpoch(
+          entries[i]["deletionTime"] as int));
+    }
+    if (entries[i]["habbit"] is String) {
+      entries[i]["habbit"] = toEJson(MyDatabase.instance
+          .find<Habbit>(oldToNewIds[entries[i]["habbit"] as String]));
+    }
+  }
+  await MyDatabase.instance.writeAsync(() {
+    MyDatabase.instance.addAll(
+        entries.map(
+          (e) => fromEJson<HabbitEntry>(e),
+        ),
+        update: true);
+  });
+
   AppLogger.instance.d("Loaded data into database");
 }
 
@@ -56,12 +88,12 @@ bool isFirebaseInitialized() {
   }
 }
 
-Future<User?> getUser() async {
+Future<auth.User?> getUser() async {
   if (!isFirebaseInitialized()) {
     AppLogger.instance.i("Firebase App not initialized");
     return null;
   }
-  return FirebaseAuth.instance.currentUser;
+  return auth.FirebaseAuth.instance.currentUser;
 }
 
 Future<void> uploadFile() async {

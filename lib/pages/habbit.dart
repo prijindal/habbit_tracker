@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:realm/realm.dart';
 
 import '../components/counter.dart';
 import '../components/entryform.dart';
@@ -11,12 +11,12 @@ import '../components/listentries.dart';
 import '../components/statistics.dart';
 import '../models/config.dart';
 import '../models/core.dart';
-import '../models/drift.dart';
+import '../models/database.dart';
 
 class HabbitPage extends StatefulWidget {
   const HabbitPage({super.key, required this.habbitId, this.primary = true});
 
-  final String habbitId;
+  final ObjectId habbitId;
   final bool primary;
 
   @override
@@ -33,10 +33,10 @@ class HabbitPageState extends State<HabbitPage> {
     super.initState();
   }
 
-  HabbitData? _habbit;
-  List<HabbitEntryData>? _entries;
-  StreamSubscription<List<HabbitData>>? _subscription;
-  StreamSubscription<List<HabbitEntryData>>? _entriesSubscription;
+  Habbit? _habbit;
+  List<HabbitEntry>? _entries;
+  StreamSubscription<RealmResultsChanges<Habbit>>? _subscription;
+  StreamSubscription<RealmResultsChanges<HabbitEntry>>? _entriesSubscription;
 
   Widget _getWidget() {
     final List<Widget> widgetOptions = <Widget>[
@@ -58,56 +58,53 @@ class HabbitPageState extends State<HabbitPage> {
   }
 
   void _addWatcher() {
-    _subscription = (MyDatabase.instance.habbit.select()
-          ..where((tbl) => tbl.id.equals(widget.habbitId))
-          ..where((tbl) => tbl.deletionTime.isNull())
-          ..limit(1))
-        .watch()
-        .listen((event) {
+    final query = MyDatabase.instance
+        .query<Habbit>(r'id == $0 AND deletionTime == nil', [widget.habbitId]);
+    _subscription = query.changes.listen((event) {
       setState(() {
-        _habbit = event.first;
+        _habbit = event.results.first;
       });
     });
   }
 
   void _addEntriesWatcher() {
-    _entriesSubscription = (MyDatabase.instance.habbitEntry.select()
-          ..where((tbl) => tbl.habbit.equals(widget.habbitId))
-          ..where((tbl) => tbl.deletionTime.isNull())
-          ..orderBy(
-            [
-              (t) => OrderingTerm(
-                    expression: t.creationTime,
-                    mode: OrderingMode.desc,
-                  ),
-            ],
-          ))
-        .watch()
-        .listen((event) {
+    final query = MyDatabase.instance.query<HabbitEntry>(
+        r'habbit.id == $0 and deletionTime == nil SORT(creationTime DESC)',
+        [widget.habbitId]);
+    _entriesSubscription = query.changes.listen((event) {
       setState(() {
-        _entries = event;
+        _entries = event.results.toList();
+        print(7 * 24 * 60);
+        for (var entry in _entries!) {
+          print(entry.creationTime.toLocal());
+          print(
+            DateTime.now()
+                .toLocal()
+                .difference(entry.creationTime.toLocal())
+                .inMinutes,
+          );
+        }
       });
     });
   }
 
   void _recordEntry() async {
-    final entries = await showDialog<HabbitEntryCompanion?>(
+    final entries = await showDialog<HabbitEntry?>(
       context: context,
       builder: (BuildContext context) {
         return EntryDialogForm(habbit: widget.habbitId);
       },
     );
     if (entries != null) {
-      await MyDatabase.instance
-          .into(MyDatabase.instance.habbitEntry)
-          .insert(entries);
+      await MyDatabase.instance.writeAsync(() {
+        MyDatabase.instance.add<HabbitEntry>(entries);
+      });
     }
   }
 
   void _editHabbit() async {
     await HabbitDialogForm.editEntry(
       context: context,
-      habbitId: widget.habbitId,
       habbit: _habbit,
     );
   }

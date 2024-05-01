@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:realm/realm.dart';
 
 import '../components/deleteentrydialog.dart';
 import '../helpers/stats.dart';
@@ -14,8 +15,8 @@ class ListEntriesSubPage extends StatefulWidget {
     required this.entries,
   });
 
-  final String habbit;
-  final List<HabbitEntryData>? entries;
+  final ObjectId habbit;
+  final List<HabbitEntry>? entries;
 
   @override
   State<ListEntriesSubPage> createState() => _ListEntriesSubPageState();
@@ -60,8 +61,8 @@ class HabbitEntryTile extends StatelessWidget {
     required this.habbit,
   });
 
-  final HabbitEntryData entry;
-  final String habbit;
+  final HabbitEntry entry;
+  final ObjectId habbit;
 
   Future<bool?> _confirmDelete(BuildContext context) {
     return showDialog<bool>(
@@ -85,7 +86,7 @@ class HabbitEntryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(entry.id),
+      key: Key(entry.id.toString()),
       background: deleteDismissible,
       secondaryBackground: deleteDismissible,
       confirmDismiss: (direction) => _confirmDelete(context),

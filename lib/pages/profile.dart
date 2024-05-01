@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-// import 'dart:html' as web_file;
+import 'package:external_path/external_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -31,12 +31,12 @@ class ProfileScreen extends StatelessWidget {
     } else {
       String? downloadDirectory;
       if (Platform.isAndroid) {
-        final externalStorageFolders = await getExternalStorageDirectories(
-          type: StorageDirectory.downloads,
+        final externalStorageFolders =
+            await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_DOWNLOADS,
         );
-        if (externalStorageFolders != null &&
-            externalStorageFolders.isNotEmpty) {
-          downloadDirectory = externalStorageFolders.first.path;
+        if (externalStorageFolders.isNotEmpty) {
+          downloadDirectory = externalStorageFolders;
         }
       } else {
         final downloadFolder = await getDownloadsDirectory();

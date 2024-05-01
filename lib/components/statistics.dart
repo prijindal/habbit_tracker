@@ -16,8 +16,8 @@ class StatisticsSubPage extends StatefulWidget {
     required this.habbit,
   });
 
-  final List<HabbitEntryData>? entries;
-  final HabbitData? habbit;
+  final List<HabbitEntry>? entries;
+  final Habbit? habbit;
 
   @override
   State<StatisticsSubPage> createState() => _StatisticsSubPageState();
@@ -55,32 +55,59 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     }
   }
 
-  List<HabbitEntryData> getEntries() {
+  DateTime _startTimeOnDate(DateTime a) {
+    return a.copyWith(
+        year: a.year,
+        month: a.month,
+        day: a.day,
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0);
+  }
+
+  List<HabbitEntry> getEntries() {
     if (widget.entries == null) {
       return [];
     }
-    final now = DateTime.now();
+    final now = DateTime.now().toLocal();
     final entries = widget.entries!;
     switch (statsIntervals) {
       case StatsIntervals.oneYear:
         return entries
-            .where(
-                (element) => now.difference(element.creationTime).inDays <= 365)
+            .where((element) =>
+                now
+                    .difference(
+                        _startTimeOnDate(element.creationTime.toLocal()))
+                    .inMinutes <=
+                365 * 24 * 60)
             .toList();
       case StatsIntervals.threeMonths:
         return entries
-            .where(
-                (element) => now.difference(element.creationTime).inDays <= 90)
+            .where((element) =>
+                now
+                    .difference(
+                        _startTimeOnDate(element.creationTime.toLocal()))
+                    .inMinutes <=
+                90 * 24 * 60)
             .toList();
       case StatsIntervals.oneMonth:
         return entries
-            .where(
-                (element) => now.difference(element.creationTime).inDays <= 30)
+            .where((element) =>
+                now
+                    .difference(
+                        _startTimeOnDate(element.creationTime.toLocal()))
+                    .inMinutes <=
+                30 * 24 * 60)
             .toList();
       case StatsIntervals.oneWeek:
         return entries
-            .where(
-                (element) => now.difference(element.creationTime).inDays <= 7)
+            .where((element) =>
+                now
+                    .difference(
+                        _startTimeOnDate(element.creationTime.toLocal()))
+                    .inMinutes <=
+                7 * 24 * 60)
             .toList();
       case StatsIntervals.all:
         return entries;

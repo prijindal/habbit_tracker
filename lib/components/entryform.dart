@@ -1,9 +1,9 @@
 import 'package:date_field/date_field.dart';
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:realm/realm.dart';
 
 import '../models/core.dart';
-import '../models/drift.dart';
+import '../models/database.dart';
 
 class EntryDialogForm extends StatefulWidget {
   const EntryDialogForm({
@@ -15,17 +15,17 @@ class EntryDialogForm extends StatefulWidget {
 
   final DateTime? creationTime;
   final String? description;
-  final String habbit;
+  final ObjectId? habbit;
 
   @override
   State<EntryDialogForm> createState() => _EntryDialogFormState();
 
   static Future<void> editEntry({
     required BuildContext context,
-    required String habbitId,
-    required HabbitEntryData entry,
+    required ObjectId? habbitId,
+    required HabbitEntry entry,
   }) async {
-    final editedData = await showDialog<HabbitEntryCompanion>(
+    final editedData = await showDialog<HabbitEntry>(
       context: context,
       builder: (BuildContext context) {
         return EntryDialogForm(
@@ -36,9 +36,10 @@ class EntryDialogForm extends StatefulWidget {
       },
     );
     if (editedData != null) {
-      (MyDatabase.instance.update(MyDatabase.instance.habbitEntry)
-            ..where((tbl) => tbl.id.equals(entry.id)))
-          .write(editedData);
+      editedData.id = entry.id;
+      await MyDatabase.instance.writeAsync(
+        () => MyDatabase.instance.add(editedData, update: true),
+      );
     }
   }
 }
@@ -90,11 +91,12 @@ class _EntryDialogFormState extends State<EntryDialogForm> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop<HabbitEntryCompanion>(
-              HabbitEntryCompanion(
-                creationTime: drift.Value(_selectedDate),
-                description: drift.Value(_descriptionFieldController.text),
-                habbit: drift.Value(widget.habbit),
+            Navigator.of(context).pop<HabbitEntry>(
+              HabbitEntry(
+                ObjectId(),
+                _selectedDate,
+                description: _descriptionFieldController.text,
+                habbit: MyDatabase.instance.find(widget.habbit),
               ),
             );
           },

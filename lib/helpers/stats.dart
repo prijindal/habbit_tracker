@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+
 import '../models/core.dart';
 
 class DurationData {
@@ -32,14 +33,14 @@ String durationToStreak(Duration? streak) {
   return "${streak.inMinutes % 60}m";
 }
 
-Duration? currentStreak(List<HabbitEntryData>? entries) {
+Duration? currentStreak(List<HabbitEntry>? entries) {
   if (entries != null && entries.isNotEmpty) {
     return DateTime.now().difference(entries[0].creationTime);
   }
   return null;
 }
 
-String currentStreakString(List<HabbitEntryData>? entries) {
+String currentStreakString(List<HabbitEntry>? entries) {
   var text = "No Data";
   final streak = currentStreak(entries);
   if (streak != null) {
@@ -51,7 +52,7 @@ String currentStreakString(List<HabbitEntryData>? entries) {
   return text;
 }
 
-int getTodayCount(List<HabbitEntryData>? entries) {
+int getTodayCount(List<HabbitEntry>? entries) {
   if (entries == null) {
     return 0;
   }
@@ -59,10 +60,11 @@ int getTodayCount(List<HabbitEntryData>? entries) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final todayEntries = entries.where((element) {
+    final creationTime = element.creationTime.toLocal();
     final aDate = DateTime(
-      element.creationTime.year,
-      element.creationTime.month,
-      element.creationTime.day,
+      creationTime.year,
+      creationTime.month,
+      creationTime.day,
     );
     return aDate == today;
   });
@@ -70,7 +72,7 @@ int getTodayCount(List<HabbitEntryData>? entries) {
 }
 
 Duration? longestStreak(
-  List<HabbitEntryData>? entries, {
+  List<HabbitEntry>? entries, {
   bool includeCurrent = false,
 }) {
   if (entries != null &&
@@ -91,17 +93,18 @@ List<DateTime> getDaysInBetween(DateTime startDate, DateTime endDate) {
   return days;
 }
 
-List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries,
+List<CountsDayData> countPerDaysData(List<HabbitEntry>? entries,
     [bool includeEmptyDates = true]) {
   final counts = <DateTime, int>{};
   if (entries == null) {
     return [];
   }
   for (var entry in entries) {
+    final creationTime = entry.creationTime.toLocal();
     final date = DateTime(
-      entry.creationTime.year,
-      entry.creationTime.month,
-      entry.creationTime.day,
+      creationTime.year,
+      creationTime.month,
+      creationTime.day,
     );
     if (!counts.containsKey(date)) {
       counts[date] = 0;
@@ -110,8 +113,8 @@ List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries,
   }
   if (includeEmptyDates && entries.isNotEmpty) {
     final daysInBetween = getDaysInBetween(
-      entries.last.creationTime,
-      entries.first.creationTime,
+      entries.last.creationTime.toLocal(),
+      entries.first.creationTime.toLocal(),
     );
     for (var day in daysInBetween) {
       final date = DateTime(
@@ -133,7 +136,7 @@ List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries,
 }
 
 List<DurationData> allDurationsData(
-  List<HabbitEntryData>? entries, {
+  List<HabbitEntry>? entries, {
   bool includeCurrent = false,
 }) {
   final List<DurationData> allDurations = [];
@@ -167,8 +170,9 @@ List<DurationData> allDurationsData(
         value.duration.inSeconds - element.duration.inSeconds);
 }
 
-String formatDate(DateTime date,
+String formatDate(DateTime originalDate,
     [HabbitDateFormat format = HabbitDateFormat.long]) {
+  final date = originalDate.toLocal();
   switch (format) {
     case HabbitDateFormat.long:
       return "${DateFormat.yMMMEd().format(date)} ${DateFormat.jm().format(date)}";

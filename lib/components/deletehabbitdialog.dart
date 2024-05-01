@@ -1,8 +1,7 @@
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 import '../models/core.dart';
-import '../models/drift.dart';
+import '../models/database.dart';
 
 class DeleteHabbitDialog extends StatelessWidget {
   const DeleteHabbitDialog({
@@ -10,7 +9,7 @@ class DeleteHabbitDialog extends StatelessWidget {
     required this.habbit,
   });
 
-  final HabbitData habbit;
+  final Habbit habbit;
 
   @override
   Widget build(BuildContext context) {
@@ -25,26 +24,19 @@ class DeleteHabbitDialog extends StatelessWidget {
           child: const Text("Cancel"),
         ),
         TextButton(
-          onPressed: () {
-            (MyDatabase.instance.update(MyDatabase.instance.habbitEntry)
-                  ..where((tbl) => tbl.habbit.equals(habbit.id)))
-                .write(
-              HabbitEntryCompanion(
-                deletionTime: Value(
-                  DateTime.now(),
-                ),
-              ),
-            );
-            (MyDatabase.instance.update(MyDatabase.instance.habbit)
-                  ..where((tbl) => tbl.id.equals(habbit.id)))
-                .write(
-              HabbitCompanion(
-                deletionTime: Value(
-                  DateTime.now(),
-                ),
-              ),
-            );
-            Navigator.of(context).pop<bool>(true);
+          onPressed: () async {
+            final entries = MyDatabase.instance
+                .query<HabbitEntry>(r'habbit.id == $0', [habbit.id]);
+
+            await MyDatabase.instance.writeAsync(() {
+              for (var element in entries) {
+                element.deletionTime = DateTime.now();
+              }
+              habbit.deletionTime = DateTime.now();
+            });
+            if (context.mounted) {
+              Navigator.of(context).pop<bool>(true);
+            }
           },
           child: const Text("Yes"),
         )
