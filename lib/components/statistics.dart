@@ -136,6 +136,10 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     return startDate;
   }
 
+  DateTime? _getEndDate() {
+    return DateTime.now();
+  }
+
   List<Widget> _buildStats() {
     final habbit = widget.habbit;
     final list = <ListTile>[];
@@ -144,12 +148,11 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
     }
     final config = HabbitConfig.getConfig(habbit.config);
     for (var element in config.statistics) {
-      final endDate = getEntries().lastOrNull?.creationTime;
       list.add(
         ListTile(
           title: Text(element.name),
           subtitle: Text(
-            element.transform(getEntries(), _getStartDate(), endDate),
+            element.transform(getEntries(), _getStartDate(), _getEndDate()),
           ),
         ),
       );

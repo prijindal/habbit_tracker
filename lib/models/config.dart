@@ -178,7 +178,7 @@ class HabbitStatistic {
   static final averageCounts = HabbitStatistic(
     name: "Average counts",
     transform: (entries, startDate, endDate) {
-      final counts = stats.countPerDaysData(entries, true, startDate);
+      final counts = stats.countPerDaysData(entries, true, startDate, endDate);
       var sum = 0;
       for (var element in counts) {
         // print(element.date);
