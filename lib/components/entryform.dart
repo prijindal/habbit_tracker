@@ -52,7 +52,7 @@ class _EntryDialogFormState extends State<EntryDialogForm> {
   @override
   void initState() {
     _descriptionFieldController.text = widget.description ?? "";
-    _selectedDate = widget.creationTime ?? DateTime.now();
+    _selectedDate = widget.creationTime?.toLocal() ?? DateTime.now();
     super.initState();
   }
 

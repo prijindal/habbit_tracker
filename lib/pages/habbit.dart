@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
 
+import '../components/calendars.dart';
 import '../components/counter.dart';
 import '../components/entryform.dart';
 import '../components/habbitform.dart';
@@ -45,6 +46,10 @@ class HabbitPageState extends State<HabbitPage> {
         entries: _entries,
       ),
       StatisticsSubPage(
+        habbit: _habbit,
+        entries: _entries,
+      ),
+      CalendarsSubPage(
         habbit: _habbit,
         entries: _entries,
       ),
@@ -152,6 +157,10 @@ class HabbitPageState extends State<HabbitPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.monitor),
             label: 'Statistics',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendar',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list),

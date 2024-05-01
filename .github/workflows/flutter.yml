@@ -9,7 +9,7 @@ jobs:
   android:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable" # or: 'beta', 'dev' or 'master'
@@ -17,13 +17,13 @@ jobs:
           cache: true
           cache-key: 'flutter-${{ github.job }}-:os:-:channel:-:version:-:arch:-:hash:'
           cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: "zulu"
           java-version: "11"
       
       - name: Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             build/
@@ -57,7 +57,7 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
       - run: flutter build appbundle --release
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: android
           path: build/app/outputs
@@ -74,7 +74,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable" # or: 'beta', 'dev' or 'master'
@@ -87,7 +87,7 @@ jobs:
           sudo apt-get install -y ninja-build libgtk-3-dev
       
       - name: Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: build/
           key: ${{ runner.os }}-flutter-${{ github.job }}-${{ hashFiles('pubspec.lock') }}
@@ -115,13 +115,13 @@ jobs:
       #     firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HABBIT_TRACKER_PRIJINDAL }}'
       #     channelId: live
       #     projectId: habbit-tracker-prijindal
-      # - uses: actions/upload-artifact@v3
+      # - uses: actions/upload-artifact@v4
       #   with:
       #     name: web
       #     path: build/web
       #     retention-days: 1
       - run: flutter build linux --release
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: linux
           path: build/linux
@@ -130,7 +130,7 @@ jobs:
   macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable" # or: 'beta', 'dev' or 'master'
@@ -140,7 +140,7 @@ jobs:
           cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
       
       - name: Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: build/
           key: ${{ runner.os }}-flutter-${{ github.job }}-${{ hashFiles('pubspec.lock') }}
@@ -159,12 +159,12 @@ jobs:
       #   env:
       #     GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
       # - run: flutter build macos --release
-      # - uses: actions/upload-artifact@v3
+      # - uses: actions/upload-artifact@v4
       #   with:
       #     name: macos
       #     path: build/macos
       # - run: flutter build ios --release --no-codesign
-      # - uses: actions/upload-artifact@v3
+      # - uses: actions/upload-artifact@v4
       #   with:
       #     name: ios
       #     path: build/ios
@@ -172,7 +172,7 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable" # or: 'beta', 'dev' or 'master'
@@ -182,7 +182,7 @@ jobs:
           cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
       
       - name: Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: build/
           key: ${{ runner.os }}-flutter-${{ github.job }}-${{ hashFiles('pubspec.lock') }}
@@ -193,7 +193,7 @@ jobs:
       - run: flutter analyze
       - run: flutter test
       # - run: flutter build windows --release
-      # - uses: actions/upload-artifact@v3
+      # - uses: actions/upload-artifact@v4
       #   with:
       #     name: windows
       #     path: build/windows
