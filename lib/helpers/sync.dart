@@ -10,6 +10,9 @@ import '../models/core.dart';
 import '../models/database.dart';
 import 'logger.dart';
 
+// ignore: constant_identifier_names
+const DB_EXPORT_NAME = "db.json";
+
 Future<String> extractDbJson() async {
   final entries = MyDatabase.instance.all<HabbitEntry>();
   final habbits = MyDatabase.instance.all<Habbit>();
@@ -99,7 +102,7 @@ Future<auth.User?> getUser() async {
 Future<void> uploadFile() async {
   final user = await getUser();
   if (user != null) {
-    final ref = FirebaseStorage.instance.ref("${user.uid}/db.json");
+    final ref = FirebaseStorage.instance.ref("${user.uid}/$DB_EXPORT_NAME");
     final encoded = await extractDbJson();
     await ref.putString(encoded);
   }
@@ -108,7 +111,7 @@ Future<void> uploadFile() async {
 Future<void> downloadFile() async {
   final user = await getUser();
   if (user != null) {
-    final ref = FirebaseStorage.instance.ref("${user.uid}/db.json");
+    final ref = FirebaseStorage.instance.ref("${user.uid}/$DB_EXPORT_NAME");
     final dbBytes = await ref.getData();
     if (dbBytes != null) {
       final jsonEncoded = String.fromCharCodes(dbBytes);
