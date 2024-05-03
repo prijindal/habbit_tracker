@@ -14,8 +14,8 @@ class CalendarsSubPage extends StatefulWidget {
     required this.habbit,
   });
 
-  final List<HabbitEntry>? entries;
-  final Habbit? habbit;
+  final List<HabbitEntryData>? entries;
+  final HabbitData? habbit;
 
   @override
   State<CalendarsSubPage> createState() => _CalendarsSubPageState();
@@ -26,7 +26,7 @@ class _CalendarsSubPageState extends State<CalendarsSubPage> {
   CalendarFormat _calendarformat = CalendarFormat.month;
 
   List<DateTime> _firstAndLast() {
-    final entries = List<HabbitEntry>.from(widget.entries ?? [])
+    final entries = List<HabbitEntryData>.from(widget.entries ?? [])
       ..sort((a, b) {
         return a.creationTime.difference(b.creationTime).inSeconds;
       });
@@ -46,7 +46,7 @@ class _CalendarsSubPageState extends State<CalendarsSubPage> {
     return _firstAndLast()[1];
   }
 
-  List<HabbitEntry> _getEventsForDay(DateTime day) {
+  List<HabbitEntryData> _getEventsForDay(DateTime day) {
     return widget.entries!
         .where((element) => isSameDay(day, element.creationTime.toLocal()))
         .toList();
@@ -104,7 +104,7 @@ class _CalendarsSubPageState extends State<CalendarsSubPage> {
     );
   }
 
-  Widget _buildEvents(List<HabbitEntry> entries) {
+  Widget _buildEvents(List<HabbitEntryData> entries) {
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),

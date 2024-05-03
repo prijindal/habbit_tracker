@@ -1,9 +1,9 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:realm/realm.dart';
 
 import '../models/config.dart';
 import '../models/core.dart';
-import '../models/database.dart';
+import '../models/drift.dart';
 
 class HabbitDialogForm extends StatefulWidget {
   const HabbitDialogForm({
@@ -24,28 +24,27 @@ class HabbitDialogForm extends StatefulWidget {
 
   static Future<void> editEntry({
     required BuildContext context,
-    required Habbit? habbit,
+    required String habbitId,
+    required HabbitData? habbit,
   }) async {
-    final habbit0 = habbit;
-    if (habbit0 == null) {
+    if (habbit == null) {
       throw StateError("habbit should not be null");
     }
-    final editedData = await showDialog<Habbit>(
+    final editedData = await showDialog<HabbitCompanion>(
       context: context,
       builder: (BuildContext context) {
         return HabbitDialogForm(
-          name: habbit0.name,
-          description: habbit0.description,
-          config: habbit0.config,
-          hidden: habbit0.hidden,
+          name: habbit.name,
+          description: habbit.description,
+          config: habbit.config,
+          hidden: habbit.hidden,
         );
       },
     );
     if (editedData != null) {
-      editedData.id = habbit0.id;
-      MyDatabase.instance.writeAsync(() {
-        MyDatabase.instance.add<Habbit>(editedData, update: true);
-      });
+      (MyDatabase.instance.update(MyDatabase.instance.habbit)
+            ..where((tbl) => tbl.id.equals(habbitId)))
+          .write(editedData);
     }
   }
 }
@@ -124,14 +123,12 @@ class _HabbitDialogFormState extends State<HabbitDialogForm> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop<Habbit>(
-                Habbit(
-                  ObjectId(),
-                  _nameFieldController.text,
-                  DateTime.now(),
-                  description: _descriptionFieldController.text,
-                  config: _habbitConfig.code,
-                  hidden: _hidden,
+              Navigator.of(context).pop<HabbitCompanion>(
+                HabbitCompanion(
+                  name: drift.Value(_nameFieldController.text),
+                  description: drift.Value(_descriptionFieldController.text),
+                  config: drift.Value(_habbitConfig.code),
+                  hidden: drift.Value(_hidden),
                 ),
               );
             },

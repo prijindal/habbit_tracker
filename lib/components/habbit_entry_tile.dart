@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:realm/realm.dart';
 
 import '../helpers/stats.dart';
 import '../models/core.dart';
@@ -14,8 +13,8 @@ class HabbitEntryTile extends StatelessWidget {
     required this.habbit,
   });
 
-  final HabbitEntry entry;
-  final ObjectId habbit;
+  final HabbitEntryData entry;
+  final String habbit;
 
   Future<bool?> _confirmDelete(BuildContext context) {
     return showDialog<bool>(
@@ -39,7 +38,7 @@ class HabbitEntryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(entry.id.toString()),
+      key: Key(entry.id),
       background: deleteDismissible,
       secondaryBackground: deleteDismissible,
       confirmDismiss: (direction) => _confirmDelete(context),

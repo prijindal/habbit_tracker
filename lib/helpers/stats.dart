@@ -33,14 +33,14 @@ String durationToStreak(Duration? streak) {
   return "${streak.inMinutes % 60}m";
 }
 
-Duration? currentStreak(List<HabbitEntry>? entries) {
+Duration? currentStreak(List<HabbitEntryData>? entries) {
   if (entries != null && entries.isNotEmpty) {
     return DateTime.now().difference(entries[0].creationTime);
   }
   return null;
 }
 
-String currentStreakString(List<HabbitEntry>? entries) {
+String currentStreakString(List<HabbitEntryData>? entries) {
   var text = "No Data";
   final streak = currentStreak(entries);
   if (streak != null) {
@@ -52,7 +52,7 @@ String currentStreakString(List<HabbitEntry>? entries) {
   return text;
 }
 
-int getTodayCount(List<HabbitEntry>? entries) {
+int getTodayCount(List<HabbitEntryData>? entries) {
   if (entries == null) {
     return 0;
   }
@@ -72,7 +72,7 @@ int getTodayCount(List<HabbitEntry>? entries) {
 }
 
 Duration? longestStreak(
-  List<HabbitEntry>? entries, {
+  List<HabbitEntryData>? entries, {
   bool includeCurrent = false,
 }) {
   if (entries != null &&
@@ -93,7 +93,7 @@ List<DateTime> getDaysInBetween(DateTime startDate, DateTime endDate) {
   return days;
 }
 
-List<CountsDayData> countPerDaysData(List<HabbitEntry>? entries,
+List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries,
     [bool includeEmptyDates = true, DateTime? startDate, DateTime? endDate]) {
   final counts = <DateTime, int>{};
   if (entries == null) {
@@ -136,7 +136,7 @@ List<CountsDayData> countPerDaysData(List<HabbitEntry>? entries,
 }
 
 List<DurationData> allDurationsData(
-  List<HabbitEntry>? entries, {
+  List<HabbitEntryData>? entries, {
   bool includeCurrent = false,
 }) {
   final List<DurationData> allDurations = [];

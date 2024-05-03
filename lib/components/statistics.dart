@@ -16,8 +16,8 @@ class StatisticsSubPage extends StatefulWidget {
     required this.habbit,
   });
 
-  final List<HabbitEntry>? entries;
-  final Habbit? habbit;
+  final List<HabbitEntryData>? entries;
+  final HabbitData? habbit;
 
   @override
   State<StatisticsSubPage> createState() => _StatisticsSubPageState();
@@ -66,7 +66,7 @@ class _StatisticsSubPageState extends State<StatisticsSubPage> {
         millisecond: 0);
   }
 
-  List<HabbitEntry> getEntries() {
+  List<HabbitEntryData> getEntries() {
     if (widget.entries == null) {
       return [];
     }

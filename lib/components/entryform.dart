@@ -1,9 +1,9 @@
 import 'package:date_field/date_field.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:realm/realm.dart';
 
 import '../models/core.dart';
-import '../models/database.dart';
+import '../models/drift.dart';
 
 class EntryDialogForm extends StatefulWidget {
   const EntryDialogForm({
@@ -15,17 +15,17 @@ class EntryDialogForm extends StatefulWidget {
 
   final DateTime? creationTime;
   final String? description;
-  final ObjectId? habbit;
+  final String habbit;
 
   @override
   State<EntryDialogForm> createState() => _EntryDialogFormState();
 
   static Future<void> editEntry({
     required BuildContext context,
-    required ObjectId? habbitId,
-    required HabbitEntry entry,
+    required String habbitId,
+    required HabbitEntryData entry,
   }) async {
-    final editedData = await showDialog<HabbitEntry>(
+    final editedData = await showDialog<HabbitEntryCompanion>(
       context: context,
       builder: (BuildContext context) {
         return EntryDialogForm(
@@ -36,10 +36,9 @@ class EntryDialogForm extends StatefulWidget {
       },
     );
     if (editedData != null) {
-      editedData.id = entry.id;
-      await MyDatabase.instance.writeAsync(
-        () => MyDatabase.instance.add(editedData, update: true),
-      );
+      (MyDatabase.instance.update(MyDatabase.instance.habbitEntry)
+            ..where((tbl) => tbl.id.equals(entry.id)))
+          .write(editedData);
     }
   }
 }
@@ -91,12 +90,11 @@ class _EntryDialogFormState extends State<EntryDialogForm> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop<HabbitEntry>(
-              HabbitEntry(
-                ObjectId(),
-                _selectedDate,
-                description: _descriptionFieldController.text,
-                habbit: MyDatabase.instance.find(widget.habbit),
+            Navigator.of(context).pop<HabbitEntryCompanion>(
+              HabbitEntryCompanion(
+                creationTime: drift.Value(_selectedDate),
+                description: drift.Value(_descriptionFieldController.text),
+                habbit: drift.Value(widget.habbit),
               ),
             );
           },

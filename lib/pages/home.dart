@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:drift/drift.dart';
 import 'package:easy_debounce/easy_throttle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:quick_actions/quick_actions.dart';
-import 'package:realm/realm.dart';
 
 import '../components/habbitform.dart';
 import '../components/habbittile.dart';
@@ -14,7 +14,7 @@ import '../helpers/entry.dart';
 import '../helpers/logger.dart';
 import '../helpers/sync.dart';
 import '../models/core.dart';
-import '../models/database.dart';
+import '../models/drift.dart';
 import '../pages/habbit.dart';
 import '../pages/login.dart';
 import '../pages/profile.dart';
@@ -31,8 +31,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Habbit>? _habbits;
-  StreamSubscription<RealmResultsChanges<Habbit>>? _subscription;
+  List<HabbitData>? _habbits;
+  StreamSubscription<List<HabbitData>>? _subscription;
   int selectedHabbitIndex = 0;
   bool _showHidden = false;
   final QuickActions quickActions = const QuickActions();
@@ -110,8 +110,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void _quickActionHandler(String type) async {
     if (type.startsWith("$addHabbitShortcut:")) {
       final habbitId = type.split("$addHabbitShortcut:")[1];
-      final habbit = MyDatabase.instance.find<Habbit>(habbitId);
-      if (habbit != null && context.mounted) {
+      final habbit = await ((MyDatabase.instance.habbit.select())
+            ..where((u) => u.id.equals(habbitId)))
+          .getSingleOrNull();
+      if (habbit != null && mounted) {
         await recordEntry(
           habbit,
           context,
@@ -137,39 +139,36 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
     _handleQuickActions();
-    // final results = MyDatabase.instance
-    //     .query<HabbitEntry>(r'@count DISTINCT(habbit) LIMIT(3)', []).toList();
-    // print(results);
-    // final count = MyDatabase.instance.habbitEntry.id.count();
-    // final query = (MyDatabase.instance.habbitEntry.selectOnly())
-    //   ..addColumns([MyDatabase.instance.habbitEntry.habbit, count])
-    //   ..groupBy([MyDatabase.instance.habbitEntry.habbit])
-    //   ..orderBy(
-    //     [
-    //       OrderingTerm(
-    //         expression: count,
-    //         mode: OrderingMode.desc,
-    //       ),
-    //     ],
-    //   )
-    //   ..limit(3);
-    // final results = await query.get();
-    // final List<String> habbitIds = [];
-    // for (final result in results) {
-    //   final habbitId = result.read(MyDatabase.instance.habbitEntry.habbit);
-    //   if (habbitId != null) {
-    //     habbitIds.add(habbitId);
-    //   }
-    // }
-    // final habbits = await ((MyDatabase.instance.habbit.select())
-    //       ..where((tbl) => tbl.id.isIn(habbitIds)))
-    //     .get();
+    final count = MyDatabase.instance.habbitEntry.id.count();
+    final query = (MyDatabase.instance.habbitEntry.selectOnly())
+      ..addColumns([MyDatabase.instance.habbitEntry.habbit, count])
+      ..groupBy([MyDatabase.instance.habbitEntry.habbit])
+      ..orderBy(
+        [
+          OrderingTerm(
+            expression: count,
+            mode: OrderingMode.desc,
+          ),
+        ],
+      )
+      ..limit(3);
+    final results = await query.get();
+    final List<String> habbitIds = [];
+    for (final result in results) {
+      final habbitId = result.read(MyDatabase.instance.habbitEntry.habbit);
+      if (habbitId != null) {
+        habbitIds.add(habbitId);
+      }
+    }
+    final habbits = await ((MyDatabase.instance.habbit.select())
+          ..where((tbl) => tbl.id.isIn(habbitIds)))
+        .get();
     final List<ShortcutItem> shortcuts = [];
-    // for (final habbit in habbits) {
-    //   final type = "$addHabbitShortcut:${habbit.id}";
-    //   final localizedTitle = "Add ${habbit.name}";
-    //   shortcuts.add(ShortcutItem(type: type, localizedTitle: localizedTitle));
-    // }
+    for (final habbit in habbits) {
+      final type = "$addHabbitShortcut:${habbit.id}";
+      final localizedTitle = "Add ${habbit.name}";
+      shortcuts.add(ShortcutItem(type: type, localizedTitle: localizedTitle));
+    }
     quickActions.setShortcutItems(shortcuts);
   }
 
@@ -177,29 +176,34 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_subscription != null) {
       _subscription?.cancel();
     }
-
-    final query = MyDatabase.instance.query<Habbit>(
-        r'deletionTime == nil SORT(creationTime ASC) SORT(order ASC)');
-
-    _subscription = query.changes.listen((event) {
-      var results = event.results.toList();
-      if (!_showHidden) {
-        results = results.where((element) => element.hidden == false).toList();
-      }
+    final query = MyDatabase.instance.habbit.select();
+    if (!_showHidden) {
+      query.where((tbl) => tbl.hidden.equals(false));
+    }
+    _subscription = (query
+          ..where((tbl) => tbl.deletionTime.isNull())
+          ..orderBy(
+            [
+              (t) => OrderingTerm(
+                    expression: t.order,
+                    mode: OrderingMode.asc,
+                  ),
+              (t) => OrderingTerm(
+                    expression: t.creationTime,
+                    mode: OrderingMode.desc,
+                  ),
+            ],
+          ))
+        .watch()
+        .listen((event) {
       setState(() {
-        _habbits = results
-          ..sort((a, b) {
-            if (a.order == null || b.order == null) {
-              return a.creationTime.difference(b.creationTime).inSeconds;
-            }
-            return a.order!.compareTo(b.order!);
-          });
+        _habbits = event;
       });
     });
   }
 
   void _recordHabbit() async {
-    final entries = await showDialog<Habbit?>(
+    final entries = await showDialog<HabbitCompanion?>(
       context: context,
       builder: (BuildContext context) {
         return const HabbitDialogForm();
@@ -207,7 +211,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     if (entries != null) {
       await MyDatabase.instance
-          .writeAsync(() => MyDatabase.instance.add<Habbit>(entries));
+          .into(MyDatabase.instance.habbit)
+          .insert(entries);
     }
   }
 
@@ -330,11 +335,18 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           final items = _habbits!.removeAt(oldindex);
           _habbits!.insert(newindex, items);
-          await MyDatabase.instance.writeAsync(() {
+          MyDatabase.instance.transaction(() async {
             for (var i = 0; i < _habbits!.length; i++) {
               var habbit = _habbits![i];
-              habbit.order = i;
-              MyDatabase.instance.add(habbit, update: true);
+              await (MyDatabase.instance.update(MyDatabase.instance.habbit)
+                    ..where(
+                      (tbl) => tbl.id.equals(habbit.id),
+                    ))
+                  .write(
+                HabbitCompanion(
+                  order: Value(i),
+                ),
+              );
             }
           });
         },

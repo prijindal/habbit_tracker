@@ -120,7 +120,7 @@ enum ExtraCounter {
 class HabbitStatistic {
   String name;
   String Function(
-          List<HabbitEntry> entries, DateTime? startDate, DateTime? endDate)
+          List<HabbitEntryData> entries, DateTime? startDate, DateTime? endDate)
       transform;
 
   HabbitStatistic({

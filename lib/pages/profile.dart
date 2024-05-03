@@ -178,11 +178,15 @@ class _ProfileAuthTileState extends State<ProfileAuthTile> {
 
   void _syncMetadata() async {
     if (user != null) {
-      final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
-      final metadata = await ref.getMetadata();
-      setState(() {
-        this.metadata = metadata;
-      });
+      try {
+        final ref = FirebaseStorage.instance.ref("${user!.uid}/db.json");
+        final metadata = await ref.getMetadata();
+        setState(() {
+          this.metadata = metadata;
+        });
+      } catch (e, stack) {
+        parseErrorToString(e, stack);
+      }
     }
   }
 
@@ -268,6 +272,12 @@ class _ProfileAuthTileState extends State<ProfileAuthTile> {
                       );
                     }
                   }
+                },
+              ),
+              ListTile(
+                title: const Text("Logout"),
+                onTap: () async {
+                  await FirebaseAuth.instance.signOut();
                 },
               )
             ],

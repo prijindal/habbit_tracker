@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:realm/realm.dart';
 
 import '../components/deletehabbitdialog.dart';
 import '../components/habbitform.dart';
@@ -10,7 +10,7 @@ import '../helpers/entry.dart';
 import '../helpers/stats.dart';
 import '../models/config.dart';
 import '../models/core.dart';
-import '../models/database.dart';
+import '../models/drift.dart';
 import '../models/theme.dart';
 import '../pages/habbit.dart';
 
@@ -22,7 +22,7 @@ class HabbitTile extends StatefulWidget {
     this.selected = false,
   });
 
-  final Habbit habbit;
+  final HabbitData habbit;
   final GestureTapCallback? onTap;
   final bool selected;
 
@@ -31,8 +31,8 @@ class HabbitTile extends StatefulWidget {
 }
 
 class _HabbitTileState extends State<HabbitTile> {
-  List<HabbitEntry>? _habbitEntries;
-  StreamSubscription<RealmResultsChanges<HabbitEntry>>? _subscription;
+  List<HabbitEntryData>? _habbitEntries;
+  StreamSubscription<List<HabbitEntryData>>? _subscription;
 
   @override
   void initState() {
@@ -47,13 +47,21 @@ class _HabbitTileState extends State<HabbitTile> {
   }
 
   void _addWatcher() {
-    final query = MyDatabase.instance.query<HabbitEntry>(
-        r'habbit.id == $0 AND deletionTime == nil SORT(creationTime DESC)',
-        [widget.habbit.id]);
-
-    _subscription = query.changes.listen((event) {
+    _subscription = (MyDatabase.instance.habbitEntry.select()
+          ..where((tbl) => tbl.habbit.equals(widget.habbit.id))
+          ..where((tbl) => tbl.deletionTime.isNull())
+          ..orderBy(
+            [
+              (t) => OrderingTerm(
+                    expression: t.creationTime,
+                    mode: OrderingMode.desc,
+                  ),
+            ],
+          ))
+        .watch()
+        .listen((event) {
       setState(() {
-        _habbitEntries = event.results.toList();
+        _habbitEntries = event;
       });
     });
   }
@@ -72,6 +80,7 @@ class _HabbitTileState extends State<HabbitTile> {
   Future<bool> _editHabbit() async {
     await HabbitDialogForm.editEntry(
       context: context,
+      habbitId: widget.habbit.id,
       habbit: widget.habbit,
     );
     return false;
@@ -88,9 +97,19 @@ class _HabbitTileState extends State<HabbitTile> {
   }
 
   void _removeEntry() async {
-    final lastEntry = MyDatabase.instance.query<HabbitEntry>(
-        r'habbit.id == $0 AND deletionTime == nil SORT(creationTime DESC) LIMIT(1)',
-        [widget.habbit.id]).firstOrNull;
+    final lastEntry = await (MyDatabase.instance.habbitEntry.select()
+          ..where((tbl) => tbl.habbit.equals(widget.habbit.id))
+          ..where((tbl) => tbl.deletionTime.isNull())
+          ..limit(1)
+          ..orderBy(
+            [
+              (t) => OrderingTerm(
+                    expression: t.creationTime,
+                    mode: OrderingMode.desc,
+                  ),
+            ],
+          ))
+        .getSingleOrNull();
     if (lastEntry == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -101,9 +120,9 @@ class _HabbitTileState extends State<HabbitTile> {
         );
       }
     } else {
-      await MyDatabase.instance.writeAsync(() {
-        MyDatabase.instance.delete<HabbitEntry>(lastEntry);
-      });
+      await MyDatabase.instance.habbitEntry.deleteWhere(
+        (tbl) => tbl.id.equals(lastEntry.id),
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -162,7 +181,7 @@ class _HabbitTileState extends State<HabbitTile> {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(widget.habbit.id.toString()),
+      key: Key(widget.habbit.id),
       confirmDismiss: (direction) {
         if (direction == DismissDirection.startToEnd) {
           return _confirmDelete();
@@ -186,7 +205,7 @@ class _HabbitTileState extends State<HabbitTile> {
 class HabbitContainerTile extends StatelessWidget {
   const HabbitContainerTile({super.key, required this.habbit});
 
-  final Habbit habbit;
+  final HabbitData habbit;
 
   @override
   Widget build(BuildContext context) {

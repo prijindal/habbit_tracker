@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:realm/realm.dart';
 
 import '../models/core.dart';
 import 'habbit_entry_tile.dart';
@@ -12,8 +11,8 @@ class ListEntriesSubPage extends StatefulWidget {
     required this.entries,
   });
 
-  final ObjectId habbit;
-  final List<HabbitEntry>? entries;
+  final String habbit;
+  final List<HabbitEntryData>? entries;
 
   @override
   State<ListEntriesSubPage> createState() => _ListEntriesSubPageState();

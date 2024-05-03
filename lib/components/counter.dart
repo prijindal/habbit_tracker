@@ -12,8 +12,8 @@ class CounterSubPage extends StatefulWidget {
     required this.entries,
     required this.habbit,
   });
-  final List<HabbitEntry>? entries;
-  final Habbit? habbit;
+  final List<HabbitEntryData>? entries;
+  final HabbitData? habbit;
 
   @override
   State<CounterSubPage> createState() => _CounterSubPageState();

@@ -1,33 +1,30 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:realm/realm.dart';
 
 import '../components/entryform.dart';
 import '../models/core.dart';
-import '../models/database.dart';
+import '../models/drift.dart';
 
-void editEntry(HabbitEntry entry, BuildContext context) async {
+void editEntry(HabbitEntryData entry, BuildContext context) async {
   await EntryDialogForm.editEntry(
     context: context,
-    habbitId: entry.habbit?.id,
+    habbitId: entry.habbit,
     entry: entry,
   );
 }
 
 Future<void> recordEntry(
-  Habbit habbit,
+  HabbitData habbit,
   BuildContext context, {
   Duration snackBarDuration = const Duration(milliseconds: 100),
 }) async {
-  final entry = HabbitEntry(
-    ObjectId(),
-    DateTime.now(),
-    habbit: habbit,
+  final entry = HabbitEntryCompanion(
+    creationTime: Value(DateTime.now()),
+    habbit: Value(habbit.id),
   );
-
-  final savedEntry = await MyDatabase.instance.writeAsync<HabbitEntry>(() {
-    return MyDatabase.instance.add(entry);
-  });
-
+  final savedEntryId = await MyDatabase.instance
+      .into(MyDatabase.instance.habbitEntry)
+      .insert(entry);
   if (context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -36,6 +33,12 @@ Future<void> recordEntry(
         action: SnackBarAction(
           label: "Edit",
           onPressed: () async {
+            final savedEntry = await (MyDatabase.instance.habbitEntry.select()
+                  ..where(
+                    (tbl) => tbl.rowId.equals(savedEntryId),
+                  )
+                  ..where((tbl) => tbl.deletionTime.isNull()))
+                .getSingle();
             if (context.mounted) {
               editEntry(savedEntry, context);
             }
