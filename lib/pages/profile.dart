@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 
 import '../helpers/sync.dart';
 import '../models/theme.dart';
-import '../pages/login.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -287,12 +286,7 @@ class _ProfileAuthTileState extends State<ProfileAuthTile> {
               "Login",
             ),
             onTap: () async {
-              await Navigator.push<UserCredential?>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginScreen(),
-                ),
-              );
+              await Navigator.pushNamed<UserCredential?>(context, "/login");
             },
           );
   }

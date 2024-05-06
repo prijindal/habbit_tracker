@@ -16,8 +16,6 @@ import '../helpers/sync.dart';
 import '../models/core.dart';
 import '../models/drift.dart';
 import '../pages/habbit.dart';
-import '../pages/login.dart';
-import '../pages/profile.dart';
 
 const mediaBreakpoint = 700;
 
@@ -91,12 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
               action: SnackBarAction(
                 label: "Login",
                 onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, "/login");
                   await _syncDb();
                 },
               ),
@@ -239,12 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.only(right: 20.0),
           child: GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => const ProfileScreen(),
-                ),
-              );
+              Navigator.pushNamed(context, "/profile");
             },
             child: const Icon(
               Icons.person,

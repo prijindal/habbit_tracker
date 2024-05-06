@@ -6,6 +6,8 @@ import './firebase_options.dart';
 import './helpers/logger.dart';
 import './models/theme.dart';
 import './pages/home.dart';
+import 'pages/login.dart';
+import 'pages/profile.dart';
 
 void main() async {
   runApp(
@@ -45,10 +47,15 @@ class MyMaterialApp extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeModeNotifier>(context);
     AppLogger.instance.d("Building MyApp");
     return MaterialApp(
+      routes: {
+        "/": (context) => const MyHomePage(),
+        "/profile": (context) => const ProfileScreen(),
+        "/login": (context) => const LoginScreen(),
+      },
+      initialRoute: "/",
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: themeNotifier.getTheme(),
-      home: const MyHomePage(),
     );
   }
 }
