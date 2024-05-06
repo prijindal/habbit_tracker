@@ -29,7 +29,7 @@ void main() {
       expect(
         durations[0] ==
             DurationData(
-              duration: Duration(hours: 2),
+              duration: const Duration(hours: 2),
               start: DateTime(2000, 1, 1, 0, 0, 0, 0, 0),
               end: DateTime(2000, 1, 1, 2, 0, 0, 0, 0),
             ),
@@ -67,6 +67,12 @@ void main() {
             CountsDayData(date: DateTime(2000, 1, 2, 0, 0, 0, 0, 0), count: 1),
         true,
       );
+    });
+
+    test("get no. of days in between two dates", () {
+      final start = DateTime(2000, 1, 1, 2, 5, 1, 0, 0);
+      final end = DateTime(2000, 5, 1, 0, 5, 0, 0, 0);
+      expect(getDaysInBetween(start, end).length, 121);
     });
   });
 }
