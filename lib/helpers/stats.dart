@@ -11,6 +11,29 @@ class DurationData {
   final Duration duration;
   final DateTime start;
   final DateTime end;
+
+  @override
+  String toString() {
+    return "${duration.toString()} ${start.toString()} ${end.toString()}";
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is DurationData &&
+        duration == other.duration &&
+        start == other.start &&
+        end == other.end;
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(duration.hashCode, start.hashCode, end.hashCode);
 }
 
 class CountsDayData {
@@ -18,6 +41,25 @@ class CountsDayData {
   final int count;
 
   CountsDayData({required this.date, required this.count});
+
+  @override
+  String toString() {
+    return "${date.toString()} ${count.toString()}";
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is CountsDayData && date == other.date && count == other.count;
+  }
+
+  @override
+  int get hashCode => Object.hash(date.hashCode, count.hashCode);
 }
 
 String durationToStreak(Duration? streak) {
@@ -136,11 +178,15 @@ List<CountsDayData> countPerDaysData(List<HabbitEntryData>? entries,
 }
 
 List<DurationData> allDurationsData(
-  List<HabbitEntryData>? entries, {
+  List<HabbitEntryData>? unsortedEntries, {
   bool includeCurrent = false,
 }) {
   final List<DurationData> allDurations = [];
-  if (entries != null && entries.isNotEmpty) {
+  if (unsortedEntries != null && unsortedEntries.isNotEmpty) {
+    final entries = (List<HabbitEntryData>.from(unsortedEntries)
+          ..sort((a, b) => a.creationTime.compareTo(b.creationTime)))
+        .reversed
+        .toList();
     if (includeCurrent) {
       final now = DateTime.now();
       allDurations.add(
