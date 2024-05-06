@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "habbit_tracker" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "habbit_tracker" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.prijindal. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 com.prijindal. All rights reserved." "\0"
             VALUE "OriginalFilename", "habbit_tracker.exe" "\0"
             VALUE "ProductName", "habbit_tracker" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
