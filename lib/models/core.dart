@@ -33,7 +33,7 @@ class HabbitEntry extends Table {
 
 // this annotation tells drift to prepare a database class that uses both of the
 // tables we just defined. We'll see how to use that database class in a moment.
-@DriftDatabase(tables: [HabbitEntry])
+@DriftDatabase(tables: [HabbitEntry, Habbit])
 class SharedDatabase extends _$SharedDatabase {
   SharedDatabase(super.e);
 

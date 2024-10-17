@@ -1102,9 +1102,8 @@ final class $$HabbitEntryTableReferences extends BaseReferences<
       .createAlias($_aliasNameGenerator(db.habbitEntry.habbit, db.habbit.id));
 
   $$HabbitTableProcessedTableManager? get habbit {
-    if ($_item.habbit == null) return null;
     final manager = $$HabbitTableTableManager($_db, $_db.habbit)
-        .filter((f) => f.id($_item.habbit!));
+        .filter((f) => f.id($_item.habbit));
     final item = $_typedResult.readTableOrNull(_habbitTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
