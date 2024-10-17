@@ -210,8 +210,8 @@ class HabbitContainerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OpenContainer(
-      openColor: Theme.of(context).colorScheme.background,
-      closedColor: Theme.of(context).colorScheme.background,
+      openColor: Theme.of(context).colorScheme.surface,
+      closedColor: Theme.of(context).colorScheme.surface,
       openBuilder: (context, action) => HabbitPage(habbitId: habbit.id),
       closedBuilder: (BuildContext _, VoidCallback openContainer) => HabbitTile(
         habbit: habbit,

@@ -262,6 +262,24 @@ class HabbitData extends DataClass implements Insertable<HabbitData> {
             deletionTime.present ? deletionTime.value : this.deletionTime,
         hidden: hidden ?? this.hidden,
       );
+  HabbitData copyWithCompanion(HabbitCompanion data) {
+    return HabbitData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description:
+          data.description.present ? data.description.value : this.description,
+      config: data.config.present ? data.config.value : this.config,
+      order: data.order.present ? data.order.value : this.order,
+      creationTime: data.creationTime.present
+          ? data.creationTime.value
+          : this.creationTime,
+      deletionTime: data.deletionTime.present
+          ? data.deletionTime.value
+          : this.deletionTime,
+      hidden: data.hidden.present ? data.hidden.value : this.hidden,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('HabbitData(')
@@ -611,6 +629,21 @@ class HabbitEntryData extends DataClass implements Insertable<HabbitEntryData> {
             deletionTime.present ? deletionTime.value : this.deletionTime,
         habbit: habbit ?? this.habbit,
       );
+  HabbitEntryData copyWithCompanion(HabbitEntryCompanion data) {
+    return HabbitEntryData(
+      id: data.id.present ? data.id.value : this.id,
+      description:
+          data.description.present ? data.description.value : this.description,
+      creationTime: data.creationTime.present
+          ? data.creationTime.value
+          : this.creationTime,
+      deletionTime: data.deletionTime.present
+          ? data.deletionTime.value
+          : this.deletionTime,
+      habbit: data.habbit.present ? data.habbit.value : this.habbit,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('HabbitEntryData(')
@@ -735,6 +768,7 @@ class HabbitEntryCompanion extends UpdateCompanion<HabbitEntryData> {
 
 abstract class _$SharedDatabase extends GeneratedDatabase {
   _$SharedDatabase(QueryExecutor e) : super(e);
+  $SharedDatabaseManager get managers => $SharedDatabaseManager(this);
   late final $HabbitTable habbit = $HabbitTable(this);
   late final $HabbitEntryTable habbitEntry = $HabbitEntryTable(this);
   @override
@@ -742,4 +776,586 @@ abstract class _$SharedDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [habbit, habbitEntry];
+}
+
+typedef $$HabbitTableCreateCompanionBuilder = HabbitCompanion Function({
+  Value<String> id,
+  required String name,
+  Value<String?> description,
+  Value<String?> config,
+  Value<int?> order,
+  Value<DateTime> creationTime,
+  Value<DateTime?> deletionTime,
+  Value<bool> hidden,
+  Value<int> rowid,
+});
+typedef $$HabbitTableUpdateCompanionBuilder = HabbitCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<String?> description,
+  Value<String?> config,
+  Value<int?> order,
+  Value<DateTime> creationTime,
+  Value<DateTime?> deletionTime,
+  Value<bool> hidden,
+  Value<int> rowid,
+});
+
+final class $$HabbitTableReferences
+    extends BaseReferences<_$SharedDatabase, $HabbitTable, HabbitData> {
+  $$HabbitTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$HabbitEntryTable, List<HabbitEntryData>>
+      _habbitEntryRefsTable(_$SharedDatabase db) =>
+          MultiTypedResultKey.fromTable(db.habbitEntry,
+              aliasName:
+                  $_aliasNameGenerator(db.habbit.id, db.habbitEntry.habbit));
+
+  $$HabbitEntryTableProcessedTableManager get habbitEntryRefs {
+    final manager = $$HabbitEntryTableTableManager($_db, $_db.habbitEntry)
+        .filter((f) => f.habbit.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_habbitEntryRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$HabbitTableFilterComposer
+    extends Composer<_$SharedDatabase, $HabbitTable> {
+  $$HabbitTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get config => $composableBuilder(
+      column: $table.config, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get order => $composableBuilder(
+      column: $table.order, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletionTime => $composableBuilder(
+      column: $table.deletionTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get hidden => $composableBuilder(
+      column: $table.hidden, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> habbitEntryRefs(
+      Expression<bool> Function($$HabbitEntryTableFilterComposer f) f) {
+    final $$HabbitEntryTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.habbitEntry,
+        getReferencedColumn: (t) => t.habbit,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$HabbitEntryTableFilterComposer(
+              $db: $db,
+              $table: $db.habbitEntry,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$HabbitTableOrderingComposer
+    extends Composer<_$SharedDatabase, $HabbitTable> {
+  $$HabbitTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get config => $composableBuilder(
+      column: $table.config, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get order => $composableBuilder(
+      column: $table.order, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletionTime => $composableBuilder(
+      column: $table.deletionTime,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get hidden => $composableBuilder(
+      column: $table.hidden, builder: (column) => ColumnOrderings(column));
+}
+
+class $$HabbitTableAnnotationComposer
+    extends Composer<_$SharedDatabase, $HabbitTable> {
+  $$HabbitTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get config =>
+      $composableBuilder(column: $table.config, builder: (column) => column);
+
+  GeneratedColumn<int> get order =>
+      $composableBuilder(column: $table.order, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletionTime => $composableBuilder(
+      column: $table.deletionTime, builder: (column) => column);
+
+  GeneratedColumn<bool> get hidden =>
+      $composableBuilder(column: $table.hidden, builder: (column) => column);
+
+  Expression<T> habbitEntryRefs<T extends Object>(
+      Expression<T> Function($$HabbitEntryTableAnnotationComposer a) f) {
+    final $$HabbitEntryTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.habbitEntry,
+        getReferencedColumn: (t) => t.habbit,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$HabbitEntryTableAnnotationComposer(
+              $db: $db,
+              $table: $db.habbitEntry,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$HabbitTableTableManager extends RootTableManager<
+    _$SharedDatabase,
+    $HabbitTable,
+    HabbitData,
+    $$HabbitTableFilterComposer,
+    $$HabbitTableOrderingComposer,
+    $$HabbitTableAnnotationComposer,
+    $$HabbitTableCreateCompanionBuilder,
+    $$HabbitTableUpdateCompanionBuilder,
+    (HabbitData, $$HabbitTableReferences),
+    HabbitData,
+    PrefetchHooks Function({bool habbitEntryRefs})> {
+  $$HabbitTableTableManager(_$SharedDatabase db, $HabbitTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HabbitTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HabbitTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HabbitTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String?> config = const Value.absent(),
+            Value<int?> order = const Value.absent(),
+            Value<DateTime> creationTime = const Value.absent(),
+            Value<DateTime?> deletionTime = const Value.absent(),
+            Value<bool> hidden = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              HabbitCompanion(
+            id: id,
+            name: name,
+            description: description,
+            config: config,
+            order: order,
+            creationTime: creationTime,
+            deletionTime: deletionTime,
+            hidden: hidden,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            required String name,
+            Value<String?> description = const Value.absent(),
+            Value<String?> config = const Value.absent(),
+            Value<int?> order = const Value.absent(),
+            Value<DateTime> creationTime = const Value.absent(),
+            Value<DateTime?> deletionTime = const Value.absent(),
+            Value<bool> hidden = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              HabbitCompanion.insert(
+            id: id,
+            name: name,
+            description: description,
+            config: config,
+            order: order,
+            creationTime: creationTime,
+            deletionTime: deletionTime,
+            hidden: hidden,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$HabbitTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({habbitEntryRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (habbitEntryRefs) db.habbitEntry],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (habbitEntryRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable:
+                            $$HabbitTableReferences._habbitEntryRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$HabbitTableReferences(db, table, p0)
+                                .habbitEntryRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.habbit == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$HabbitTableProcessedTableManager = ProcessedTableManager<
+    _$SharedDatabase,
+    $HabbitTable,
+    HabbitData,
+    $$HabbitTableFilterComposer,
+    $$HabbitTableOrderingComposer,
+    $$HabbitTableAnnotationComposer,
+    $$HabbitTableCreateCompanionBuilder,
+    $$HabbitTableUpdateCompanionBuilder,
+    (HabbitData, $$HabbitTableReferences),
+    HabbitData,
+    PrefetchHooks Function({bool habbitEntryRefs})>;
+typedef $$HabbitEntryTableCreateCompanionBuilder = HabbitEntryCompanion
+    Function({
+  Value<String> id,
+  Value<String?> description,
+  Value<DateTime> creationTime,
+  Value<DateTime?> deletionTime,
+  required String habbit,
+  Value<int> rowid,
+});
+typedef $$HabbitEntryTableUpdateCompanionBuilder = HabbitEntryCompanion
+    Function({
+  Value<String> id,
+  Value<String?> description,
+  Value<DateTime> creationTime,
+  Value<DateTime?> deletionTime,
+  Value<String> habbit,
+  Value<int> rowid,
+});
+
+final class $$HabbitEntryTableReferences extends BaseReferences<
+    _$SharedDatabase, $HabbitEntryTable, HabbitEntryData> {
+  $$HabbitEntryTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $HabbitTable _habbitTable(_$SharedDatabase db) => db.habbit
+      .createAlias($_aliasNameGenerator(db.habbitEntry.habbit, db.habbit.id));
+
+  $$HabbitTableProcessedTableManager? get habbit {
+    if ($_item.habbit == null) return null;
+    final manager = $$HabbitTableTableManager($_db, $_db.habbit)
+        .filter((f) => f.id($_item.habbit!));
+    final item = $_typedResult.readTableOrNull(_habbitTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$HabbitEntryTableFilterComposer
+    extends Composer<_$SharedDatabase, $HabbitEntryTable> {
+  $$HabbitEntryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletionTime => $composableBuilder(
+      column: $table.deletionTime, builder: (column) => ColumnFilters(column));
+
+  $$HabbitTableFilterComposer get habbit {
+    final $$HabbitTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.habbit,
+        referencedTable: $db.habbit,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$HabbitTableFilterComposer(
+              $db: $db,
+              $table: $db.habbit,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$HabbitEntryTableOrderingComposer
+    extends Composer<_$SharedDatabase, $HabbitEntryTable> {
+  $$HabbitEntryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletionTime => $composableBuilder(
+      column: $table.deletionTime,
+      builder: (column) => ColumnOrderings(column));
+
+  $$HabbitTableOrderingComposer get habbit {
+    final $$HabbitTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.habbit,
+        referencedTable: $db.habbit,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$HabbitTableOrderingComposer(
+              $db: $db,
+              $table: $db.habbit,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$HabbitEntryTableAnnotationComposer
+    extends Composer<_$SharedDatabase, $HabbitEntryTable> {
+  $$HabbitEntryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletionTime => $composableBuilder(
+      column: $table.deletionTime, builder: (column) => column);
+
+  $$HabbitTableAnnotationComposer get habbit {
+    final $$HabbitTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.habbit,
+        referencedTable: $db.habbit,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$HabbitTableAnnotationComposer(
+              $db: $db,
+              $table: $db.habbit,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$HabbitEntryTableTableManager extends RootTableManager<
+    _$SharedDatabase,
+    $HabbitEntryTable,
+    HabbitEntryData,
+    $$HabbitEntryTableFilterComposer,
+    $$HabbitEntryTableOrderingComposer,
+    $$HabbitEntryTableAnnotationComposer,
+    $$HabbitEntryTableCreateCompanionBuilder,
+    $$HabbitEntryTableUpdateCompanionBuilder,
+    (HabbitEntryData, $$HabbitEntryTableReferences),
+    HabbitEntryData,
+    PrefetchHooks Function({bool habbit})> {
+  $$HabbitEntryTableTableManager(_$SharedDatabase db, $HabbitEntryTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HabbitEntryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HabbitEntryTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HabbitEntryTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<DateTime> creationTime = const Value.absent(),
+            Value<DateTime?> deletionTime = const Value.absent(),
+            Value<String> habbit = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              HabbitEntryCompanion(
+            id: id,
+            description: description,
+            creationTime: creationTime,
+            deletionTime: deletionTime,
+            habbit: habbit,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<DateTime> creationTime = const Value.absent(),
+            Value<DateTime?> deletionTime = const Value.absent(),
+            required String habbit,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              HabbitEntryCompanion.insert(
+            id: id,
+            description: description,
+            creationTime: creationTime,
+            deletionTime: deletionTime,
+            habbit: habbit,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$HabbitEntryTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({habbit = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (habbit) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.habbit,
+                    referencedTable:
+                        $$HabbitEntryTableReferences._habbitTable(db),
+                    referencedColumn:
+                        $$HabbitEntryTableReferences._habbitTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$HabbitEntryTableProcessedTableManager = ProcessedTableManager<
+    _$SharedDatabase,
+    $HabbitEntryTable,
+    HabbitEntryData,
+    $$HabbitEntryTableFilterComposer,
+    $$HabbitEntryTableOrderingComposer,
+    $$HabbitEntryTableAnnotationComposer,
+    $$HabbitEntryTableCreateCompanionBuilder,
+    $$HabbitEntryTableUpdateCompanionBuilder,
+    (HabbitEntryData, $$HabbitEntryTableReferences),
+    HabbitEntryData,
+    PrefetchHooks Function({bool habbit})>;
+
+class $SharedDatabaseManager {
+  final _$SharedDatabase _db;
+  $SharedDatabaseManager(this._db);
+  $$HabbitTableTableManager get habbit =>
+      $$HabbitTableTableManager(_db, _db.habbit);
+  $$HabbitEntryTableTableManager get habbitEntry =>
+      $$HabbitEntryTableTableManager(_db, _db.habbitEntry);
 }
